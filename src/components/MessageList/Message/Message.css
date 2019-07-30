@@ -1,0 +1,64 @@
+div {
+    display: block;
+}
+
+.messageSection {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-end;
+}
+
+.messageSectionBot {
+    justify-content: flex-end;
+}
+
+.messageSectionBot img {
+    align-self: flex-start;
+}
+
+.messageSectionTime {
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.messageSectionSystem {
+    text-align: center;
+    font-size: 13px;
+    color: black;
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+.messageSectionBody {
+    padding: 10px 10px;
+    border-radius: 5px;
+}
+
+.messageSectionBot .messageSectionBody {
+    background-color: #E8EAF6;
+    margin-left: 5px;
+}
+
+.messageSectionUser .messageSectionBody {
+    background-color: #F5F5F5;
+    margin-right: 5px;
+}
+
+.messageSectionBot img {
+    height: 33px;
+    border-radius: 50%;
+    margin-right: 15px;
+    margin-left: 10px;
+}
+
+.messageSectionUser img {
+    height: 33px;
+    border-radius: 50%;
+    margin-right: 10px;
+    margin-left: 15px;
+}
+
+.messageSectionCenter {
+    display: flex;
+    flex-direction: column;
+}

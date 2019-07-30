@@ -1,0 +1,44 @@
+div {
+    display: block;
+}
+
+.chatOuterBox {
+    overflow-y: scroll;
+    flex: 0 1 auto;
+}
+
+.chatInnerBox {
+    padding-top: 20px;
+    padding-bottom: 50px;
+}
+
+.chatRoom {
+    height: 100vh;
+    padding-top: 15px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.chatRoom .dateSection {
+    text-align: center;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.5);
+    margin-bottom: 30px;
+}
+
+.textInputBox {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    bottom: 0;
+    height: 50px;
+    position: fixed;
+    background-color: #eeeeee;
+    padding-left: 10px;
+    padding-right: 5px;
+}
+
+.textInputBoxInput {
+    width: 46%;
+    padding: 5px;
+  }
