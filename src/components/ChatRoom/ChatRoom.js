@@ -87,7 +87,7 @@ export class ChatRoom extends Component {
                             <span>Wednesday, July 23, 2019</span>
                         </div>
                         <MessageList messageList={messageList}/>
-                        <div style={{float:'left', clear:'both'}} ref={(el) => { this.messagesEnd = el; }}></div>
+                        <div style={{float:'left', clear:'both', height:'50px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                     </main>
                     <div class="textInputBox">
                         <div class="textInputBoxInput">
