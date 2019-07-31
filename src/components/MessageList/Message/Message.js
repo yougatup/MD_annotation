@@ -5,9 +5,6 @@ import user from './images/avatar.png';
 import bot from './images/bot.png';
 
 export class Message extends Component {
-    state = {
-
-    };
 
     render() {
         const { id, type, time, text } = this.props;

@@ -1,4 +1,4 @@
-import React, { Component, ReactDOM } from 'react';
+import React, { Component } from 'react';
 import { Button, Select, Input } from 'semantic-ui-react'
 import './ChatRoom.css';
 
@@ -11,18 +11,21 @@ const options = [
   ]
 
 export class ChatRoom extends Component {
-    id = 3
+    id = 1
 
-    state = {
-        time: new Date(),
-        input: '',
-        type: 'user',
-        messageList: [
-            { id: 0, type: 'system', time: '오전 9:33:20', text: 'Lets start 1st conversation!'},
-            { id: 1, type: 'user', time: '오전 9:33:51', text: 'Hello! This is a test message.'},
-            { id: 2, type: 'bot', time: '오전 9:34:42', text: 'And this is an answer.'}
-        ]
-    };
+    constructor(props) {
+        super(props);
+        this.state = { 
+            time: new Date(),
+            input: '',
+            type: 'user',
+            messageList: [
+                // { id: 0, type: 'system', time: null, text: 'Lets start 1st conversation!'},
+                { id: 0, type: 'user', time: '오전 9:33:51', text: 'Hello! This is a test message.'},
+                // { id: 2, type: 'bot', time: '오전 9:34:42', text: 'And this is an answer.'}
+            ] 
+        };
+    }
     
     // Lifecycle Function
     componentDidMount() {
