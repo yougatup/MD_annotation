@@ -27,7 +27,7 @@ export class MessageList extends Component {
 
     render() {
         const { messageList } = this.props;
-        const { systemStartMessage, start, topic } = this.state;
+        const { systemStartMessage, start } = this.state;
         
         // system message when the conversation starts
         const startmessage = systemStartMessage.map(

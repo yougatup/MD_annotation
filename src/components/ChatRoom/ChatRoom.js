@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Select, Input } from 'semantic-ui-react'
+import { Button, Input } from 'semantic-ui-react'
 import './ChatRoom.css';
 
 import { MessageList } from "./../MessageList/MessageList.js";
-
-const options = [
-    { key: 'system', text: 'system', value: 'system' },
-    { key: 'bot', text: 'bot', value: 'bot' },
-    { key: 'user', text: 'user', value: 'user' },
-  ]
+import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/SystemBotButton.js";
+import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
 export class ChatRoom extends Component {
     id = 1
@@ -22,25 +18,59 @@ export class ChatRoom extends Component {
             type: 'user',
             messageList: [
                 // { id: 0, type: 'system', time: null, text: 'Lets start 1st conversation!'},
-                // { id: 0, type: 'user', time: '오전 9:33:51', text: 'Hello! This is a test message.'},
-                // { id: 2, type: 'bot', time: '오전 9:34:42', text: 'And this is an answer.'}
-            ] 
+            ],
+
+            // Status for controlling chatflow
+            selectBotStatus: true,
+            similarUserStatus: true,
+            depth: 0,
         };
+        
+        this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
+        this.updateRenderUntilUserBot = this.updateRenderUntilUserBot.bind(this);
+        this.selectTopic = this.selectTopic.bind(this);
+        this.selectAnswer = this.selectAnswer.bind(this);
+        this.similarResponse = this.similarResponse.bind(this);
+        this.handleChangeText = this.handleChangeText.bind(this);
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     
-    /* Lifecycle Function */
+    /* A. Lifecycle Function */
 
     componentDidMount() {
-        this.scrollToBottom();
+        // this.scrollToBottom();
     }
     
     componentDidUpdate() {
         this.scrollToBottom();
     }
 
+
+    /* B. Controlling Functions */
+
     // Auto scrolling to bottom
     scrollToBottom = () => {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Set interval btw user response and SystemBotButton
+    updateRenderUntilSysBot(){
+        setTimeout(() => {
+            this.setState(prevState => ({
+                selectBotStatus: !prevState.selectBotStatus
+            }));
+        }, 1500);
+    }
+
+    // Set interval btw user response and SystemUserButton
+    updateRenderUntilUserBot(){
+        setTimeout(() => {
+            this.setState(prevState => ({
+                similarUserStatus: !prevState.similarUserStatus
+            }));
+        }, 1500);
     }
 
     // Putting topic from the SystemTopicButton
@@ -56,21 +86,51 @@ export class ChatRoom extends Component {
                 text: dataFromChild,
             })
         })
+        this.updateRenderUntilSysBot();
     }
 
-    /* Event Handler */
+    // Putting answer from the SystemBotButton
+    selectAnswer = (dataFromChild) => {
+        const { messageList, time } = this.state;
+        this.setState({
+            messageList: messageList.concat({
+                id: this.id++,
+                type: 'bot',
+                time: time.toLocaleDateString(),
+                text: dataFromChild,
+            }),
+            selectBotStatus: true,
+        })
+    }
+
+    // Putting similar response from the SystemUserButton
+    similarResponse = (dataFromChild) => {
+        const { messageList, time } = this.state;
+        
+        // 나중에 수정으로 대체
+        this.setState({
+            messageList: this.state.messageList.splice(-1, 1)
+        })
+        this.setState({
+            messageList: messageList.concat({
+                id: this.id++,
+                type: 'user',
+                time: time.toLocaleDateString(),
+                text: dataFromChild,
+            }),
+            similarUserStatus: true,
+        })
+        
+        this.updateRenderUntilSysBot();
+    }
+
+    /* C. Event Handler */
+
     // save the input text of each utterance
     handleChangeText = (e) => {
         this.setState({
             input: e.target.value
         });
-    }
-
-    // save the type of each utterance
-    handleChangeStatus = (e, { value }) => {
-        this.setState({
-            type: value
-        })
     }
 
     // add the input utterance with text, time, type to messageList 
@@ -83,8 +143,9 @@ export class ChatRoom extends Component {
                 type: type,
                 time: time.toLocaleTimeString(),
                 text: input,
-            })
+            }),
         })
+        this.updateRenderUntilUserBot();
         this.scrollToBottom();
     }
 
@@ -95,13 +156,14 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, messageList } = this.state;
+        const { input, messageList, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
-            handleChangeStatus,
             handleCreate,
             handleKeyPress,
-            selectTopic
+            selectTopic,
+            selectAnswer,
+            similarResponse
         } = this;
 
         return (
@@ -112,13 +174,14 @@ export class ChatRoom extends Component {
                             <span>Wednesday, July 23, 2019</span>
                         </div>
                         <MessageList conveyTopic={selectTopic} messageList={messageList}/>
+                        {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} />}
+                        {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
                         <div style={{float:'left', clear:'both', height:'50px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                     </main>
                     <div class="textInputBox">
                         <div class="textInputBoxInput">
                             <Input fluid type='text' placeholder='Type...' action>
                                 <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
-                                <Select compact placeholder='Type' options={options} defaultValue='user' onChange={handleChangeStatus}/>
                                 <Button type='submit' onClick={handleCreate}>Send</Button>
                             </Input>
                         </div>
