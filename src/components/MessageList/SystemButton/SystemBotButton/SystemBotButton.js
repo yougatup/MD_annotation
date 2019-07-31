@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Segment, Button } from 'semantic-ui-react';
-import './SystemButton.css';
+import './SystemBotButton.css';
 
-export class SystemButton extends Component {
+export class SystemBotButton extends Component {
     constructor(props) {
         super(props);
         this.state = { 
             TopicList: [
-                'Topic A', 
+                '택시 불러줘', 
                 'Topic B', 
                 'Topic C'
             ],
@@ -24,16 +24,16 @@ export class SystemButton extends Component {
         const { handleCreate } = this;
 
         return (
-            <div class="systemButtonBox">
+            <div class="systemBotButtonBox">
                 <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
                 <span>Select the topic!</span>
                 <Segment.Group>
                     <Segment textAlign='center'>
                         <Button fluid onClick={handleCreate.bind(this, TopicList[0])}>{TopicList[0]}</Button>
                             <div style={{height: '10px'}}></div>
-                        <Button fluid onClick={handleCreate.bind(this,TopicList[1])}>{TopicList[1]}</Button>
+                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[1])}>{TopicList[1]}</Button>
                             <div style={{height: '10px'}}></div>
-                        <Button fluid onClick={handleCreate.bind(this,TopicList[2])}>{TopicList[2]}</Button>
+                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[2])}>{TopicList[2]}</Button>
                     </Segment>
                 </Segment.Group>
             </div>

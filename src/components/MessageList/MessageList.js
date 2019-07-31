@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Message } from "./Message/Message.js";
-import { SystemButton } from "./SystemButton/SystemButton.js";
+import { SystemTopicButton } from "./SystemButton/SystemTopicButton/SystemTopicButton.js";
 
 export class MessageList extends Component {
 
@@ -15,19 +15,24 @@ export class MessageList extends Component {
         };
     }
 
-    startStatusCallback = (dataFromChild) => {
+    // Control the topic and start status of each conversation
+    selectTopic = (dataFromChild) => {
+        const { conveyTopic } = this.props;
         this.setState({
             start: false,
             topic: dataFromChild,
         })
+        conveyTopic(dataFromChild);
     }
 
     render() {
         const { messageList } = this.props;
         const { systemStartMessage, start, topic } = this.state;
-        const messages = messageList.map(
+        
+        // system message when the conversation starts
+        const startmessage = systemStartMessage.map(
             ({id, type, time, text}) => (
-                <Message
+                <Message 
                     id={id}
                     type={type}
                     time={time}
@@ -35,9 +40,11 @@ export class MessageList extends Component {
                 />
             )
         );
-        const startmessage = systemStartMessage.map(
+        
+        // whole messages during conversation
+        const messages = messageList.map(
             ({id, type, time, text}) => (
-                <Message 
+                <Message
                     id={id}
                     type={type}
                     time={time}
@@ -50,13 +57,8 @@ export class MessageList extends Component {
             <div>
                 {startmessage}
                 {start 
-                    ? <SystemButton changeStartStatus={this.startStatusCallback}/>
-                    : <Message 
-                        id={1}
-                        type={'user'}
-                        time={new Date().toLocaleTimeString()}
-                        text={topic}
-                    />
+                    ? <SystemTopicButton selectTopic={this.selectTopic}/>
+                    : null
                 }
                 {messages}
             </div>
