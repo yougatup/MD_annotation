@@ -1,31 +1,43 @@
 import React, { Component } from 'react';
-import { Button, Input } from 'semantic-ui-react'
+// import axios from 'axios';
+import { Button, Input, Label, Image } from 'semantic-ui-react'
 import './ChatRoom.css';
+
+import user from './../MessageList/Message/images/avatar.png';
+
+// import { exampletree } from './../../treeExample.js';
 
 import { MessageList } from "./../MessageList/MessageList.js";
 import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/SystemBotButton.js";
 import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
 export class ChatRoom extends Component {
-    id = 1
+    id = 0
 
     constructor(props) {
         super(props);
         this.state = {
+            // Local tree data
+            // raw_data: [],
+            // topicList: [],
+
             topic: '',
             time: new Date(),
             input: '',
             type: 'user',
+            originResponse: '',
             messageList: [
                 // { id: 0, type: 'system', time: null, text: 'Lets start 1st conversation!'},
             ],
 
             // Status for controlling chatflow
+            startConversation: false,
             selectBotStatus: true,
             similarUserStatus: true,
             depth: 0,
         };
         
+        // this.importData = this.importData.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
         this.updateRenderUntilUserBot = this.updateRenderUntilUserBot.bind(this);
@@ -47,8 +59,20 @@ export class ChatRoom extends Component {
         this.scrollToBottom();
     }
 
+    /* B. Data import  */
+    // importData = () => {
+    //     const { topicList } = this.state;
+    //     for (var i=0; i<exampletree.length; i++){
+    //         var obj = exampletree[i];
+    //         this.setState({
+    //             topicList: topicList.concat({
+    //                 topic: obj.value,
+    //             })
+    //         })
+    //     }
+    // }
 
-    /* B. Controlling Functions */
+    /* C. Controlling Functions */
 
     // Auto scrolling to bottom
     scrollToBottom = () => {
@@ -79,6 +103,7 @@ export class ChatRoom extends Component {
         const { messageList, time } = this.state;
         this.setState({
             topic: dataFromChild,
+            startConversation: true,
             messageList: messageList.concat({
                 id: this.id++,
                 type: 'user',
@@ -124,7 +149,7 @@ export class ChatRoom extends Component {
         this.updateRenderUntilSysBot();
     }
 
-    /* C. Event Handler */
+    /* D. Event Handler */
 
     // save the input text of each utterance
     handleChangeText = (e) => {
@@ -138,6 +163,7 @@ export class ChatRoom extends Component {
         const { input, type, time, messageList } = this.state;
         this.setState({
             input: '',
+            originResponse: input,
             messageList: messageList.concat({
                 id: this.id++,
                 type: type,
@@ -156,7 +182,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, messageList, selectBotStatus, similarUserStatus } = this.state;
+        const { input, originResponse, messageList, startConversation, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -167,27 +193,37 @@ export class ChatRoom extends Component {
         } = this;
 
         return (
-            <div class="chatOuterBox">
-                <div class="chatInnerBox">
-                    <main class="chatRoom">
-                        <div class="dateSection">
-                            <span>Wednesday, July 23, 2019</span>
-                        </div>
-                        <MessageList conveyTopic={selectTopic} messageList={messageList}/>
-                        {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} />}
-                        {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
-                        <div style={{float:'left', clear:'both', height:'50px'}} ref={(el) => { this.messagesEnd = el; }}></div>
-                    </main>
-                    <div class="textInputBox">
-                        <div class="textInputBoxInput">
-                            <Input fluid type='text' placeholder='Type...' action>
-                                <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
-                                <Button type='submit' onClick={handleCreate}>Send</Button>
-                            </Input>
+                <div class="chatOuterBox">
+                    <div class="chatInnerBox">
+                        <main class="chatRoom">
+                            <div class="dateSection">
+                                <span>Wednesday, July 23, 2019</span>
+                            </div>
+                            <MessageList conveyTopic={selectTopic} messageList={messageList}/>
+                            {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse}/>}
+                            {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
+                            <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
+                        </main>
+                        <div class="textInputBox">
+                            <div class="textInputBoxInput">
+                                {(similarUserStatus && selectBotStatus && startConversation)
+                                    ?   <Input fluid type='text' placeholder='Type...' action>
+                                            <Label>
+                                                <Image avatar spaced='right' src={user} />
+                                                User
+                                            </Label>
+                                            <input style={{marginLeft:'3px'}} value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
+                                            <Button type='submit' onClick={handleCreate}>Send</Button>
+                                        </Input>
+                                    :   <Input fluid disabled type='text' placeholder='Type...' action>
+                                            <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
+                                            <Button type='submit' onClick={handleCreate}>Send</Button>
+                                        </Input>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         );
     }
 }

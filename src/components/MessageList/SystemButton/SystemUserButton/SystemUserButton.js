@@ -6,12 +6,14 @@ export class SystemUserButton extends Component {
     constructor(props) {
         super(props);
         this.state = { 
-            OtherResponseList: [
-                '언제 출발할 예정이야?', 
-                '혹시 몇 명이 탈거야?',
-                '언제 필요해?',
+            otherResponseList: [
+                { text: "언제 출발할 예정이야?" },
+                { text: "혹시 몇 명이 탈거야?" },
+                { text: "언제 필요해?" },
             ],
         };
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleNotapplicable = this.handleNotapplicable.bind(this);
     }
 
     handleCreate = (response) => {
@@ -19,9 +21,17 @@ export class SystemUserButton extends Component {
         similarResponse(response);
     }
 
+    handleNotapplicable = () => {
+        const { originResponse, similarResponse } = this.props;
+        
+        // Adding new response(User)
+
+        similarResponse(originResponse);
+    }
+
     render() {
-        const { OtherResponseList } = this.state;
-        const { handleCreate } = this;
+        const { otherResponseList } = this.state;
+        const { handleCreate, handleNotapplicable } = this;
 
         return (
             <div class="systemUserButtonBox">
@@ -29,13 +39,15 @@ export class SystemUserButton extends Component {
                 <span>Select the similar response!</span>
                 <Segment.Group>
                     <Segment textAlign='center'>
-                        <Button fluid onClick={handleCreate.bind(this, OtherResponseList[0])}>{OtherResponseList[0]}</Button>
-                            <div style={{height: '10px'}}></div>
-                        <Button fluid onClick={handleCreate.bind(this,OtherResponseList[1])}>{OtherResponseList[1]}</Button>
-                            <div style={{height: '10px'}}></div>
-                        <Button fluid onClick={handleCreate.bind(this,OtherResponseList[2])}>{OtherResponseList[2]}</Button>
-                            <div style={{height: '10px'}}></div>
-                        <Button fluid negative onClick={handleCreate.bind('no')}>해당 없음</Button>
+                        {otherResponseList.map((response, i) => {
+                            return ( 
+                                <div>
+                                <Button fluid onClick={handleCreate.bind(this, response.text)}>{response.text}</Button>
+                                <div style={{height: '10px'}}></div>
+                                </div>
+                            );
+                        })}
+                        <Button fluid negative onClick={handleNotapplicable}>해당 없음</Button>
                     </Segment>
                 </Segment.Group>
             </div>

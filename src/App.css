@@ -8,7 +8,7 @@
 }
 
 .leftSideBar {
-  height: 100vh;
+  /* height: 100vh; */
   background-color: #252839;
   display: flex;
   flex-direction: column;
