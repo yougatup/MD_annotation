@@ -60,17 +60,6 @@ export class ChatRoom extends Component {
     }
 
     /* B. Data import  */
-    // importData = () => {
-    //     const { topicList } = this.state;
-    //     for (var i=0; i<exampletree.length; i++){
-    //         var obj = exampletree[i];
-    //         this.setState({
-    //             topicList: topicList.concat({
-    //                 topic: obj.value,
-    //             })
-    //         })
-    //     }
-    // }
 
     /* C. Controlling Functions */
 
