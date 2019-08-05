@@ -70,7 +70,7 @@ export class RightSideBar extends Component {
         const { endButtonStatus, nextButtonStatus } = this.props;
 
         return (
-            <div>
+            <div class="rightGrid">
                 <div class="rightInsBox">
                     <div class="textCenter">
                         <div style={{ marginBottom: '20px' }}> {num_experiment} / 5 </div>

@@ -4,7 +4,7 @@ import './LeftSideBar.css';
 export class LeftSideBar extends Component {
     render() {
         return (
-            <div>
+            <div class="leftGrid">
                 <div class="protobotLogo">Protobot</div>
                 <div class="leftInsBox">
                     <div class="textCenter">

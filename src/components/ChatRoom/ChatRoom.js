@@ -34,6 +34,7 @@ export class ChatRoom extends Component {
 
             // Status for controlling chatflow
             startSession: true,
+            turnNotice: false,
             startConversationStatus: false,
             selectBotStatus: true,
             similarUserStatus: true,
@@ -42,6 +43,7 @@ export class ChatRoom extends Component {
         
         // this.importData = this.importData.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
         this.startConversation = this.startConversation.bind(this);
         this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
@@ -67,6 +69,7 @@ export class ChatRoom extends Component {
             this.setState({
                 similarUserStatus: true,
                 selectBotStatus: true,
+                turnNotice: false,
             })
             controlEndStatus();
         }
@@ -78,13 +81,30 @@ export class ChatRoom extends Component {
         this.scrollToBottom();
     }
 
+    
     /* B. Data import  */
+    //-----------------------
+    // function for tree data import
+    // ----------------------
+
 
     /* C. Controlling Functions */
 
     // Auto scrolling to bottom
     scrollToBottom = () => {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+
+    // Notice the turn of user to user
+    changeTurnNotice = () => {
+        const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
+        setTimeout(() => {
+            this.setState(prevState => ({
+                turnNotice: !prevState.turnNotice,
+            }));
+            controlEndButtonStatus();
+        }, 900);
     }
 
     // Reset the messageList when the conversation is ended
@@ -159,7 +179,6 @@ export class ChatRoom extends Component {
     // Putting selected answer from the SystemBotButton
     selectAnswer = (dataFromChild) => {
         const { messageList, time } = this.state;
-        const { controlEndButtonStatus } = this.props;
         this.setState({
             messageList: messageList.concat({
                 id: this.id++,
@@ -168,7 +187,8 @@ export class ChatRoom extends Component {
                 text: dataFromChild,
             }),
             selectBotStatus: true,
-        })
+        })     
+        this.changeTurnNotice();
     }
 
     // Putting similar response which user is selected from the SystemUserButton
@@ -206,6 +226,7 @@ export class ChatRoom extends Component {
         const { input, type, time, messageList } = this.state;
         this.setState({
             input: '',
+            turnNotice: false,
             originResponse: input,
             messageList: messageList.concat({
                 id: this.id++,
@@ -225,7 +246,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, originResponse, messageList, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
+        const { input, originResponse, messageList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -235,6 +256,10 @@ export class ChatRoom extends Component {
             similarResponse
         } = this;
 
+        const sysNotice = [
+            { id: 0, type: 'system', time: null, text: "Now, it's User turn!"},
+        ];
+
         return (
                 <div class="chatOuterBox">
                     <div class="chatInnerBox">
@@ -242,10 +267,11 @@ export class ChatRoom extends Component {
                             <div class="dateSection">
                                 <span>Wednesday, July 23, 2019</span>
                             </div>
-                            <MessageList conveyTopic={selectTopic} messageList={messageList}/>
+                            <MessageList messageList={messageList}/>
                             {startSession ? <SystemTopicButton selectTopic={selectTopic}/> : null}
                             {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse}/>}
                             {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
+                            {turnNotice ? <MessageList messageList={sysNotice}/> : null}
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>
                         <div class="textInputBox">
