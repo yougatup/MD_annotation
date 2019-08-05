@@ -22,6 +22,7 @@ export class SystemBotButton extends Component {
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
+    // Send the answer which the user is selected to parent component
     sendAnswer = (answer) => {
         const { selectAnswer } = this.props;
         selectAnswer(answer);
@@ -66,7 +67,7 @@ export class SystemBotButton extends Component {
                 <span>
                     {(AnswerList.length === 0)
                         ?   'Add new answer!'
-                        :   'Select the appropriate answer!'
+                        :   'Select the appropriate answer or add new answer of the bot!'
                     }
                 </span>
                 <Segment.Group>

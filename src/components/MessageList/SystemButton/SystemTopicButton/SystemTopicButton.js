@@ -12,6 +12,7 @@ export class SystemTopicButton extends Component {
                 'Topic C'
             ],
         };
+        this.handleCreate = this.handleCreate.bind(this);
     }
 
     handleCreate = (topic) => {

@@ -8,11 +8,13 @@ import user from './../MessageList/Message/images/avatar.png';
 // import { exampletree } from './../../treeExample.js';
 
 import { MessageList } from "./../MessageList/MessageList.js";
+import { SystemTopicButton } from "./../MessageList/SystemButton/SystemTopicButton/SystemTopicButton.js";
 import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/SystemBotButton.js";
 import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
 export class ChatRoom extends Component {
     id = 0
+    num_experiment = 1
 
     constructor(props) {
         super(props);
@@ -27,11 +29,12 @@ export class ChatRoom extends Component {
             type: 'user',
             originResponse: '',
             messageList: [
-                // { id: 0, type: 'system', time: null, text: 'Lets start 1st conversation!'},
+                { id: 0, type: 'system', time: null, text: 'Lets start ' + this.num_experiment + ' conversation!'},
             ],
 
             // Status for controlling chatflow
-            startConversation: false,
+            startSession: true,
+            startConversationStatus: false,
             selectBotStatus: true,
             similarUserStatus: true,
             depth: 0,
@@ -39,6 +42,8 @@ export class ChatRoom extends Component {
         
         // this.importData = this.importData.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
+        this.resetMessageList = this.resetMessageList.bind(this);
+        this.startConversation = this.startConversation.bind(this);
         this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
         this.updateRenderUntilUserBot = this.updateRenderUntilUserBot.bind(this);
         this.selectTopic = this.selectTopic.bind(this);
@@ -56,6 +61,20 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate() {
+        const { end, start, controlEndStatus, controlStartStatus } = this.props;
+        if ( end === true ) {
+            this.resetMessageList();
+            this.setState({
+                similarUserStatus: true,
+                selectBotStatus: true,
+            })
+            controlEndStatus();
+        }
+        if( start === true ) {
+            this.startConversation();
+            controlStartStatus();
+        }
+
         this.scrollToBottom();
     }
 
@@ -68,31 +87,64 @@ export class ChatRoom extends Component {
         this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     }
 
+    // Reset the messageList when the conversation is ended
+    resetMessageList = () => {
+        this.setState({
+            messageList: [
+                { id: 0, type: 'system', time: null, text: 'End the '+ this.num_experiment + ' conversation!'},
+                { id: 1, type: 'system', time: null, text: 'Click the [Next Conversation] Button in below'}
+            ],
+        })
+        this.id = 0
+    }
+
+    // Initialize the messageList when a new conversation starts
+    startConversation = () => {
+        this.num_experiment ++
+        this.setState({
+            messageList: [
+                { id: 0, type: 'system', time: null, text: 'Lets start '+ this.num_experiment + ' conversation!'}
+            ],
+            startSession: true,
+        })
+    }
+
     // Set interval btw user response and SystemBotButton
+    // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus'
     updateRenderUntilSysBot(){
+        const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         setTimeout(() => {
             this.setState(prevState => ({
                 selectBotStatus: !prevState.selectBotStatus
             }));
-        }, 1500);
+            controlEndButtonStatus();
+        }, 1000);
     }
 
     // Set interval btw user response and SystemUserButton
+    // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus' function
     updateRenderUntilUserBot(){
+        const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         setTimeout(() => {
             this.setState(prevState => ({
                 similarUserStatus: !prevState.similarUserStatus
             }));
-        }, 1500);
+            controlEndButtonStatus();
+        }, 1000);
     }
 
     // Putting topic from the SystemTopicButton
     // And start the conversation with user's utterance (selected Topic)
+    // Also unblock the endbutton through 'controlEndButtonStatus' function
     selectTopic = (dataFromChild) => {
         const { messageList, time } = this.state;
+        const { controlEndButtonStatus } = this.props;
         this.setState({
             topic: dataFromChild,
-            startConversation: true,
+            startSession: false,
+            startConversationStatus: true,
             messageList: messageList.concat({
                 id: this.id++,
                 type: 'user',
@@ -100,12 +152,14 @@ export class ChatRoom extends Component {
                 text: dataFromChild,
             })
         })
+        controlEndButtonStatus();
         this.updateRenderUntilSysBot();
     }
 
-    // Putting answer from the SystemBotButton
+    // Putting selected answer from the SystemBotButton
     selectAnswer = (dataFromChild) => {
         const { messageList, time } = this.state;
+        const { controlEndButtonStatus } = this.props;
         this.setState({
             messageList: messageList.concat({
                 id: this.id++,
@@ -117,7 +171,7 @@ export class ChatRoom extends Component {
         })
     }
 
-    // Putting similar response from the SystemUserButton
+    // Putting similar response which user is selected from the SystemUserButton
     similarResponse = (dataFromChild) => {
         const { messageList, time } = this.state;
         
@@ -171,7 +225,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, originResponse, messageList, startConversation, selectBotStatus, similarUserStatus } = this.state;
+        const { input, originResponse, messageList, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -189,15 +243,16 @@ export class ChatRoom extends Component {
                                 <span>Wednesday, July 23, 2019</span>
                             </div>
                             <MessageList conveyTopic={selectTopic} messageList={messageList}/>
+                            {startSession ? <SystemTopicButton selectTopic={selectTopic}/> : null}
                             {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse}/>}
                             {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>
                         <div class="textInputBox">
                             <div class="textInputBoxInput">
-                                {(similarUserStatus && selectBotStatus && startConversation)
+                                {(similarUserStatus && selectBotStatus && startConversationStatus)
                                     ?   <Input fluid type='text' placeholder='Type...' action>
-                                            <Label>
+                                            <Label color={'violet'}>
                                                 <Image avatar spaced='right' src={user} />
                                                 User
                                             </Label>

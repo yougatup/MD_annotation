@@ -36,7 +36,7 @@ export class SystemUserButton extends Component {
         return (
             <div class="systemUserButtonBox">
                 <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
-                <span>Select the similar response!</span>
+                <span>Select the similar response with your response!</span>
                 <Segment.Group>
                     <Segment textAlign='center'>
                         {otherResponseList.map((response, i) => {
