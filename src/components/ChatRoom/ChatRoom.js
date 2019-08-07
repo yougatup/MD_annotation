@@ -32,6 +32,12 @@ export class ChatRoom extends Component {
                 { id: 0, type: 'system', time: null, text: 'Lets start ' + this.num_experiment + ' conversation!'},
             ],
 
+            // Data lists for conversation flow
+            AnswerList: [
+                { text: '어디까지 갈 예정이야?' },
+                { text: '현재 위치 알려줘' },
+            ],
+
             // Status for controlling chatflow
             startSession: true,
             turnNotice: false,
@@ -41,7 +47,7 @@ export class ChatRoom extends Component {
             depth: 0,
         };
         
-        // this.importData = this.importData.bind(this);
+        this.updateAnswerList = this.updateAnswerList.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
@@ -86,6 +92,14 @@ export class ChatRoom extends Component {
     //-----------------------
     // function for tree data import
     // ----------------------
+    
+    updateAnswerList = () => {
+        this.setState({
+            AnswerList: [
+                { text: '어디까지 갈 예정이야?' },
+            ],
+        });
+    }
 
 
     /* C. Controlling Functions */
@@ -246,14 +260,15 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, originResponse, messageList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
+        const { input, originResponse, messageList, AnswerList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
             handleKeyPress,
             selectTopic,
             selectAnswer,
-            similarResponse
+            similarResponse,
+            updateAnswerList
         } = this;
 
         const sysNotice = [
@@ -264,13 +279,17 @@ export class ChatRoom extends Component {
                 <div class="chatOuterBox">
                     <div class="chatInnerBox">
                         <main class="chatRoom">
+                            
+                            {/* 예시 버튼 */}
+                            <Button fulid positive onClick={updateAnswerList}>UpdateAnswerList</Button>
+                            
                             <div class="dateSection">
                                 <span>Wednesday, July 23, 2019</span>
                             </div>
                             <MessageList messageList={messageList}/>
                             {startSession ? <SystemTopicButton selectTopic={selectTopic}/> : null}
                             {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse}/>}
-                            {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} />}
+                            {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} AnswerList={AnswerList}/>}
                             {turnNotice ? <MessageList messageList={sysNotice}/> : null}
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>
