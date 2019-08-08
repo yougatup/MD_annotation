@@ -56,7 +56,6 @@ export class ChatRoom extends Component {
         };
         
 	this.curNode = this.conversationTree;
-        this.updateAnswerList = this.updateAnswerList.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
@@ -100,9 +99,7 @@ export class ChatRoom extends Component {
     //-----------------------
     // function for tree data import
     // ----------------------
-    
-    updateAnswerList = () => {
-    }
+
 
 
     /* C. Controlling Functions */
@@ -352,7 +349,6 @@ export class ChatRoom extends Component {
             selectTopic,
             selectAnswer,
             similarResponse,
-            updateAnswerList
         } = this;
 
         const sysNotice = [
@@ -363,10 +359,6 @@ export class ChatRoom extends Component {
                 <div class="chatOuterBox">
                     <div class="chatInnerBox">
                         <main class="chatRoom">
-                            
-                            {/* 예시 버튼 */}
-                            <Button fulid positive onClick={updateAnswerList}>UpdateAnswerList</Button>
-                            
                             <div class="dateSection">
                                 <span>Wednesday, July 23, 2019</span>
                             </div>

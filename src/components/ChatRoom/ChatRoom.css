@@ -5,6 +5,7 @@ div {
 .chatOuterBox {
     overflow-y: scroll;
     flex: 0 1 auto;
+    max-width: 800px;
 }
 
 .chatInnerBox {
@@ -39,6 +40,7 @@ div {
 }
 
 .textInputBoxInput {
+    max-width: 800px;
     width: 46%;
     padding: 5px;
   }
