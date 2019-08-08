@@ -30,9 +30,9 @@ export class SystemBotButton extends Component {
     }
 
     // Send the answer which the user is selected to parent component
-    sendAnswer = (answer) => {
+    sendAnswer = (answer, i) => {
         const { selectAnswer } = this.props;
-        selectAnswer(answer);
+        selectAnswer(answer, i);
     }
 
     changeInputState = () => {
@@ -82,7 +82,7 @@ export class SystemBotButton extends Component {
                         {AnswerList.map((answer, i) => {
                             return (
                                 <div>
-                                <Button fluid onClick={sendAnswer.bind(this, answer.text)}>{answer.text}</Button>
+                                <Button fluid onClick={sendAnswer.bind(this, answer.text, i)}>{answer.text}</Button>
                                 <div style={{height: '10px'}}></div> 
                                 </div>
                             );

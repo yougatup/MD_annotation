@@ -13,8 +13,11 @@ import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/S
 import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
 export class ChatRoom extends Component {
-    id = 0
-    num_experiment = 1
+    id = 0;
+    num_experiment = 1;
+    curPath = [];
+    conversationTree = require("./../../treeExample.js").default[0];
+    curNode = null;
 
     constructor(props) {
         super(props);
@@ -34,9 +37,14 @@ export class ChatRoom extends Component {
 
             // Data lists for conversation flow
             AnswerList: [
-                { text: '어디까지 갈 예정이야?' },
-                { text: '현재 위치 알려줘' },
-            ],
+	    	{text: "haha"}, 
+	    	{text: "blahblah"}
+	    ],
+
+	    otherResponseList: [
+	    	{text: "Hello"}, 
+	    	{text: "World!"}
+	    ],
 
             // Status for controlling chatflow
             startSession: true,
@@ -47,6 +55,7 @@ export class ChatRoom extends Component {
             depth: 0,
         };
         
+	this.curNode = this.conversationTree;
         this.updateAnswerList = this.updateAnswerList.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
@@ -87,18 +96,12 @@ export class ChatRoom extends Component {
         this.scrollToBottom();
     }
 
-    
     /* B. Data import  */
     //-----------------------
     // function for tree data import
     // ----------------------
     
     updateAnswerList = () => {
-        this.setState({
-            AnswerList: [
-                { text: '어디까지 갈 예정이야?' },
-            ],
-        });
     }
 
 
@@ -134,7 +137,8 @@ export class ChatRoom extends Component {
 
     // Initialize the messageList when a new conversation starts
     startConversation = () => {
-        this.num_experiment ++
+        this.num_experiment ++;
+	this.curNode = this.conversationTree;
         this.setState({
             messageList: [
                 { id: 0, type: 'system', time: null, text: 'Lets start '+ this.num_experiment + ' conversation!'}
@@ -162,6 +166,7 @@ export class ChatRoom extends Component {
         const { controlEndButtonStatus } = this.props;
         controlEndButtonStatus();
         setTimeout(() => {
+	    this.setOtherResponseList();
             this.setState(prevState => ({
                 similarUserStatus: !prevState.similarUserStatus
             }));
@@ -172,7 +177,7 @@ export class ChatRoom extends Component {
     // Putting topic from the SystemTopicButton
     // And start the conversation with user's utterance (selected Topic)
     // Also unblock the endbutton through 'controlEndButtonStatus' function
-    selectTopic = (dataFromChild) => {
+    selectTopic = (dataFromChild, i) => {
         const { messageList, time } = this.state;
         const { controlEndButtonStatus } = this.props;
         this.setState({
@@ -186,12 +191,58 @@ export class ChatRoom extends Component {
                 text: dataFromChild,
             })
         })
+	this.curPath.push(i);
+	this.setAnswerList(i);
+
         controlEndButtonStatus();
         this.updateRenderUntilSysBot();
     }
 
+    setOtherResponseList = () => {
+	console.log(this.curNode);
+
+	var answerList = [];
+
+	if(this.curNode.children != null) {
+	    for(var i=0;i<this.curNode.children.length;i++) {
+		answerList.push({text: this.curNode.children[i].value});
+	    }
+	}
+
+	console.log(answerList);
+
+	this.setState({
+	    otherResponseList: answerList,
+	});
+    }
+
+    setAnswerList = () => {
+	var answerList = [];
+
+	if(this.curNode.children != null) {
+	    for(var i=0;i<this.curNode.children.length;i++) {
+		answerList.push({text: this.curNode.children[i].value});
+	    }
+	}
+
+	this.setState({
+	    AnswerList: answerList,
+	});
+    }
+
+    makeId = () => {
+	var length = 10;
+	var result           = '';
+	var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	var charactersLength = characters.length;
+	for ( var i = 0; i < length; i++ ) {
+	    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
+    }
+
     // Putting selected answer from the SystemBotButton
-    selectAnswer = (dataFromChild) => {
+    selectAnswer = (dataFromChild, order) => {
         const { messageList, time } = this.state;
         this.setState({
             messageList: messageList.concat({
@@ -201,18 +252,34 @@ export class ChatRoom extends Component {
                 text: dataFromChild,
             }),
             selectBotStatus: true,
-        })     
+        })
+
+	if(order == null) {
+	    this.curNode.children.push({
+		bot: true,
+		children: [],
+		name: this.makeId(),
+		parent: this.curNode.name,
+		value: dataFromChild
+	    });
+
+	    order = this.curNode.children.length-1;
+	}
+
+	this.curPath.push(order);
+	this.curNode = this.curNode.children[order];
         this.changeTurnNotice();
     }
 
     // Putting similar response which user is selected from the SystemUserButton
-    similarResponse = (dataFromChild) => {
+    similarResponse = (dataFromChild, order) => {
         const { messageList, time } = this.state;
         
         // 나중에 수정으로 대체
         this.setState({
             messageList: this.state.messageList.splice(-1, 1)
         })
+
         this.setState({
             messageList: messageList.concat({
                 id: this.id++,
@@ -222,7 +289,24 @@ export class ChatRoom extends Component {
             }),
             similarUserStatus: true,
         })
-        
+
+	if(order == null) {
+	    this.curNode.children.push({
+		bot: false,
+		children: [],
+		name: this.makeId(),
+		parent: this.curNode.name,
+		value: dataFromChild
+	    });
+
+	    order = this.curNode.children.length-1;
+	}
+
+	this.curPath.push(order);
+	this.curNode = this.curNode.children[order];
+
+	this.setAnswerList();
+
         this.updateRenderUntilSysBot();
     }
 
@@ -260,7 +344,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, originResponse, messageList, AnswerList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
+        const { input, originResponse, messageList, AnswerList, otherResponseList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -288,7 +372,7 @@ export class ChatRoom extends Component {
                             </div>
                             <MessageList messageList={messageList}/>
                             {startSession ? <SystemTopicButton selectTopic={selectTopic}/> : null}
-                            {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse}/>}
+                            {similarUserStatus ? null : <SystemUserButton similarResponse={similarResponse} originResponse={originResponse} otherResponseList={otherResponseList}/>}
                             {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} AnswerList={AnswerList}/>}
                             {turnNotice ? <MessageList messageList={sysNotice}/> : null}
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>

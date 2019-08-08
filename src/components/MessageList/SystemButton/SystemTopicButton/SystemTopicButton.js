@@ -15,9 +15,9 @@ export class SystemTopicButton extends Component {
         this.handleCreate = this.handleCreate.bind(this);
     }
 
-    handleCreate = (topic) => {
+    handleCreate = (topic, order) => {
         const { selectTopic } = this.props;
-        selectTopic(topic);
+        selectTopic(topic, order);
     }
 
     render() {
@@ -30,11 +30,11 @@ export class SystemTopicButton extends Component {
                 <span>Select the topic!</span>
                 <Segment.Group>
                     <Segment textAlign='center'>
-                        <Button fluid onClick={handleCreate.bind(this, TopicList[0])}>{TopicList[0]}</Button>
+                        <Button fluid onClick={handleCreate.bind(this, TopicList[0], 0)}>{TopicList[0]}</Button>
                             <div style={{height: '10px'}}></div>
-                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[1])}>{TopicList[1]}</Button>
+                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[1], 1)}>{TopicList[1]}</Button>
                             <div style={{height: '10px'}}></div>
-                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[2])}>{TopicList[2]}</Button>
+                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[2], 2)}>{TopicList[2]}</Button>
                     </Segment>
                 </Segment.Group>
             </div>
