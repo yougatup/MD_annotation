@@ -22,10 +22,6 @@ export class ChatRoom extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            // Local tree data
-            // raw_data: [],
-            // topicList: [],
-
             topic: '',
             time: new Date(),
             input: '',
@@ -135,7 +131,7 @@ export class ChatRoom extends Component {
     // Initialize the messageList when a new conversation starts
     startConversation = () => {
         this.num_experiment ++;
-	this.curNode = this.conversationTree;
+	    this.curNode = this.conversationTree;
         this.setState({
             messageList: [
                 { id: 0, type: 'system', time: null, text: 'Lets start '+ this.num_experiment + ' conversation!'}

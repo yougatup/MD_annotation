@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import { fire } from './shared/Firebase';
 
 import { ChatRoom } from "./components/ChatRoom/ChatRoom.js";
 import { LeftSideBar } from "./components/LeftSideBar/LeftSideBar.js";
@@ -9,6 +10,7 @@ class App extends Component{
 
   constructor(props) {
     super(props);
+    fire();
     this.state = {
       // Check the conversation status
       end: false,
