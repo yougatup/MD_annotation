@@ -55,7 +55,7 @@ export class ChatRoom extends Component {
             depth: 0,
         };
         
-	this.curNode = this.conversationTree;
+	    this.curNode = this.conversationTree;
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
@@ -196,46 +196,46 @@ export class ChatRoom extends Component {
     }
 
     setOtherResponseList = () => {
-	console.log(this.curNode);
+	    console.log(this.curNode);
 
-	var answerList = [];
+        var answerList = [];
 
-	if(this.curNode.children != null) {
-	    for(var i=0;i<this.curNode.children.length;i++) {
-		answerList.push({text: this.curNode.children[i].value});
-	    }
-	}
+        if(this.curNode.children != null) {
+            for(var i=0;i<this.curNode.children.length;i++) {
+            answerList.push({text: this.curNode.children[i].value});
+            }
+        }
 
-	console.log(answerList);
+        console.log(answerList);
 
-	this.setState({
-	    otherResponseList: answerList,
-	});
+        this.setState({
+            otherResponseList: answerList,
+        });
     }
 
     setAnswerList = () => {
-	var answerList = [];
+        var answerList = [];
 
-	if(this.curNode.children != null) {
-	    for(var i=0;i<this.curNode.children.length;i++) {
-		answerList.push({text: this.curNode.children[i].value});
-	    }
-	}
+        if(this.curNode.children != null) {
+            for(var i=0;i<this.curNode.children.length;i++) {
+            answerList.push({text: this.curNode.children[i].value});
+            }
+        }
 
-	this.setState({
-	    AnswerList: answerList,
-	});
+        this.setState({
+            AnswerList: answerList,
+        });
     }
 
     makeId = () => {
-	var length = 10;
-	var result           = '';
-	var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var charactersLength = characters.length;
-	for ( var i = 0; i < length; i++ ) {
-	    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-	}
-	return result;
+        var length = 10;
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
     // Putting selected answer from the SystemBotButton
@@ -251,21 +251,21 @@ export class ChatRoom extends Component {
             selectBotStatus: true,
         })
 
-	if(order == null) {
-	    this.curNode.children.push({
-		bot: true,
-		children: [],
-		name: this.makeId(),
-		parent: this.curNode.name,
-		value: dataFromChild
-	    });
+        if(order == null) {
+            this.curNode.children.push({
+            bot: true,
+            children: [],
+            name: this.makeId(),
+            parent: this.curNode.name,
+            value: dataFromChild
+            });
 
-	    order = this.curNode.children.length-1;
-	}
+            order = this.curNode.children.length-1;
+        }
 
-	this.curPath.push(order);
-	this.curNode = this.curNode.children[order];
-        this.changeTurnNotice();
+        this.curPath.push(order);
+        this.curNode = this.curNode.children[order];
+            this.changeTurnNotice();
     }
 
     // Putting similar response which user is selected from the SystemUserButton
@@ -287,22 +287,22 @@ export class ChatRoom extends Component {
             similarUserStatus: true,
         })
 
-	if(order == null) {
-	    this.curNode.children.push({
-		bot: false,
-		children: [],
-		name: this.makeId(),
-		parent: this.curNode.name,
-		value: dataFromChild
-	    });
+        if(order == null) {
+            this.curNode.children.push({
+            bot: false,
+            children: [],
+            name: this.makeId(),
+            parent: this.curNode.name,
+            value: dataFromChild
+            });
 
-	    order = this.curNode.children.length-1;
-	}
+            order = this.curNode.children.length-1;
+        }
 
-	this.curPath.push(order);
-	this.curNode = this.curNode.children[order];
+        this.curPath.push(order);
+        this.curNode = this.curNode.children[order];
 
-	this.setAnswerList();
+        this.setAnswerList();
 
         this.updateRenderUntilSysBot();
     }
@@ -353,6 +353,7 @@ export class ChatRoom extends Component {
 
         const sysNotice = [
             { id: 0, type: 'system', time: null, text: "Now, it's User turn!"},
+            { id: 1, type: 'loading', time: null, text: "  "},
         ];
 
         return (

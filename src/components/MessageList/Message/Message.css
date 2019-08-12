@@ -58,6 +58,13 @@ div {
     margin-left: 15px;
 }
 
+.messageSectionBody img {
+    height: 22px;
+    width: 50px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
 .messageSectionCenter {
     display: flex;
     flex-direction: column;

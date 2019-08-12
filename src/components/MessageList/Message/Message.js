@@ -3,11 +3,12 @@ import './Message.css';
 
 import user from './images/avatar.png';
 import bot from './images/bot.png';
+import loading from './images/loading.gif';
 
 export class Message extends Component {
 
     render() {
-        const { id, type, time, text } = this.props;
+        const { type, time, text } = this.props;
         return (
             <div>
                 {
@@ -30,6 +31,13 @@ export class Message extends Component {
                                             <span class="messageSectionBody">{text}</span>
                                         </div>
                                         <span class="messageSectionTime">{time}</span>
+                                    </div>);
+                        if (type === 'loading')
+                            return (<div class="messageSection messageSectionUser">
+                                        <img src={user} alt="User"/>
+                                        <div class="messageSectionCenter">
+                                            <span class="messageSectionBody"><img src={loading}/></span>
+                                        </div>
                                     </div>);
                     })()
                 }
