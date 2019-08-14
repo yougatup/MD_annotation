@@ -2,24 +2,36 @@ import React, { Component } from 'react';
 import { Segment, Button } from 'semantic-ui-react';
 import './SystemUserButton.css';
 
+const databaseURL = "https://protobot-rawdata.firebaseio.com/";
+
 export class SystemUserButton extends Component {
+    extension = '.json';
+    addedpath = '';
+
     constructor(props) {
         super(props);
         this.state = { 
             otherResponseList: [],
         };
+        this._post = this._post.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
         this.handleNotapplicable = this.handleNotapplicable.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        // 여기서는 setState 를 하는 것이 아니라
-        // 특정 props 가 바뀔 때 설정하고 설정하고 싶은 state 값을 리턴하는 형태로
-        // 사용됩니다.
-        if (nextProps.otherResponseList !== prevState.otherResponseList) {
-          return { otherResponseList: nextProps.otherResponseList};
-        }
-        return null; // null 을 리턴하면 따로 업데이트 할 것은 없다라는 의미
+
+    _post(response) {
+        return fetch(`${databaseURL+this.props.curPath+this.extension}`, {
+            method: 'POST',
+            body: JSON.stringify(response)
+        }).then(res => {
+            if(res.status !== 200) {
+                throw new Error(res.statusText);
+            }
+            return res.json();
+        }).then(data => {
+            // Convey to Chatroom the path and response
+            this.handleCreate(response, data.name);
+        });
     }
 
     handleCreate = (response, i) => {
@@ -28,34 +40,40 @@ export class SystemUserButton extends Component {
     }
 
     handleNotapplicable = () => {
-        const { originResponse, similarResponse } = this.props;
+        const { originResponse } = this.props;
+        const newResponse = {value: originResponse, children: {}}
         
-        // Adding new response(User)
-
-        similarResponse(originResponse);
+        this._post(newResponse);
     }
 
     render() {
-        const { otherResponseList } = this.state;
+        const { otherResponseList } = this.props;
         const { handleCreate, handleNotapplicable } = this;
+        const overflowCondition = ''
+        if (otherResponseList.length > 5){
+            overflowCondition = 'scroll'
+        }
 
         return (
             <div class="systemUserButtonBox">
                 <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
                 <span>Select the similar response with your response!</span>
-                <Segment.Group>
-                    <Segment textAlign='center'>
-                        {otherResponseList.map((response, i) => {
-                            return ( 
-                                <div>
-                                <Button fluid onClick={handleCreate.bind(this, response.text, i)}>{response.text}</Button>
-                                <div style={{height: '10px'}}></div>
-                                </div>
-                            );
-                        })}
-                        <Button fluid negative onClick={handleNotapplicable}>해당 없음</Button>
-                    </Segment>
-                </Segment.Group>
+                <div style={{width: '100%', maxHeight: '250px', overflowY: {overflowCondition}}}>
+                    <Segment.Group>
+                        <Segment textAlign='center'>
+                            <Button fluid negative onClick={handleNotapplicable}>해당 없음</Button>
+                            {Object.keys(otherResponseList).map(id => {
+                                const response = otherResponseList[id];
+                                return (
+                                    <div key={id}>
+                                    <div style={{height: '10px'}}></div> 
+                                    <Button fluid onClick={handleCreate.bind(this, response, id)}>{response.value}</Button>
+                                    </div>
+                                );
+                            })}
+                        </Segment>
+                    </Segment.Group>
+                </div>
             </div>
         );
     }

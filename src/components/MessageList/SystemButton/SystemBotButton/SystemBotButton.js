@@ -4,35 +4,46 @@ import './SystemBotButton.css';
 
 import bot from './../../Message/images/bot.png';
 
+const databaseURL = "https://protobot-rawdata.firebaseio.com/";
+
 export class SystemBotButton extends Component {
+    extension = '.json';
+    addedpath = '';
+
     constructor(props) {
         super(props);
         this.state = { 
-            AnswerList: [],
             input: '',
             inputState: true,
         };
+        this._post = this._post.bind(this);
         this.sendAnswer = this.sendAnswer.bind(this);
         this.changeInputState = this.changeInputState.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
+        this.handleSelect = this.handleSelect.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        // 여기서는 setState 를 하는 것이 아니라
-        // 특정 props 가 바뀔 때 설정하고 설정하고 싶은 state 값을 리턴하는 형태로
-        // 사용됩니다.
-        if (nextProps.AnswerList !== prevState.AnswerList) {
-          return { AnswerList: nextProps.AnswerList };
-        }
-        return null; // null 을 리턴하면 따로 업데이트 할 것은 없다라는 의미
+    _post(answer) {
+        return fetch(`${databaseURL+this.props.curPath+this.extension}`, {
+            method: 'POST',
+            body: JSON.stringify(answer)
+        }).then(res => {
+            if(res.status !== 200) {
+                throw new Error(res.statusText);
+            }
+            return res.json();
+        }).then(data => {
+            // Convey to Chatroom the path and answer
+            this.sendAnswer(answer, this.addedpath + data.name + '/children', true);
+        });
     }
 
     // Send the answer which the user is selected to parent component
-    sendAnswer = (answer, i) => {
+    sendAnswer = (answer, id, state) => {
         const { selectAnswer } = this.props;
-        selectAnswer(answer, i);
+        selectAnswer(answer, id, state);
     }
 
     changeInputState = () => {
@@ -47,15 +58,21 @@ export class SystemBotButton extends Component {
         });
     }
 
+    // Select origin answer of Bot, state: false
+    handleSelect = (answer, id) => {
+        const selectedPath = id + '/children';
+        this.sendAnswer(answer, selectedPath, false);
+    }
+
+    // Add New answer of Bot, state: true
     handleCreate = () => {
         const { input } = this.state;
+        const newAnswer = {value: input, children: {}}
         this.setState({
             input: '',
         })
-
         // Adding new answer(Bot)
-
-        this.sendAnswer(input);
+        this._post(newAnswer);
     }
 
     handleKeyPress = (e) => {
@@ -65,41 +82,49 @@ export class SystemBotButton extends Component {
     }
 
     render() {
-        const { inputState, AnswerList, input } = this.state;
-        const { sendAnswer, changeInputState, handleChangeText, handleCreate, handleKeyPress } = this;
+        const { inputState, input } = this.state;
+        const { AnswerList } = this.props;
+        const { handleSelect, changeInputState, handleChangeText, handleCreate, handleKeyPress } = this;
+        const overflowCondition = ''
+        if (AnswerList.length > 5){
+            overflowCondition = 'scroll'
+        }
 
         return (
             <div class="systemBotButtonBox">
                 <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
                 <span>
-                    {(AnswerList.length === 0)
+                    {(AnswerList === 0)
                         ?   'Add new answer!'
                         :   'Select the appropriate answer or add new answer of the bot!'
                     }
                 </span>
-                <Segment.Group>
-                    <Segment textAlign='center'>
-                        {AnswerList.map((answer, i) => {
-                            return (
-                                <div>
-                                <Button fluid onClick={sendAnswer.bind(this, answer.text, i)}>{answer.text}</Button>
-                                <div style={{height: '10px'}}></div> 
-                                </div>
-                            );
-                        })}
-                        { inputState
-                            ? <Button fluid positive onClick={changeInputState}>Add new answer</Button>
-                            : <Input fluid type='text' placeholder='Type your answer...' action>
-                                <Label color={'green'}>
-                                    <Image avatar spaced='right' src={bot} />
-                                    Bot
-                                </Label>    
-                                <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
-                                <Button positive type='submit' onClick={handleCreate}>Add</Button>
-                            </Input>
-                        }
-                    </Segment>
-                </Segment.Group>
+                <div style={{width: '100%', maxHeight: '250px', overflowY: {overflowCondition}}}>
+                    <Segment.Group>
+                        <Segment textAlign='center'>
+                            { inputState
+                                ? <Button fluid positive onClick={changeInputState}>Add new answer</Button>
+                                : <Input fluid type='text' placeholder='Type your answer...' action>
+                                    <Label color={'green'}>
+                                        <Image avatar spaced='right' src={bot} />
+                                        Bot
+                                    </Label>    
+                                    <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
+                                    <Button positive type='submit' onClick={handleCreate}>Add</Button>
+                                </Input>
+                            }
+                            {Object.keys(AnswerList).map(id => {
+                                const answer = AnswerList[id];
+                                return (
+                                    <div key={id}>
+                                    <div style={{height: '10px'}}></div>
+                                    <Button fluid onClick={handleSelect.bind(this, answer, id)}>{answer.value}</Button>
+                                    </div>
+                                );
+                            })}
+                        </Segment>
+                    </Segment.Group>
+                </div>
             </div>
         );
     }

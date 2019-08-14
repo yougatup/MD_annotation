@@ -5,38 +5,46 @@ import './SystemTopicButton.css';
 export class SystemTopicButton extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
-            TopicList: [
-                '택시 불러줘', 
-                'Topic B', 
-                'Topic C'
-            ],
+        this.state = {
         };
         this.handleCreate = this.handleCreate.bind(this);
     }
 
-    handleCreate = (topic, order) => {
+    handleCreate = (topic, id) => {
         const { selectTopic } = this.props;
-        selectTopic(topic, order);
+        selectTopic(topic, id);
     }
 
     render() {
-        const { TopicList } = this.state;
         const { handleCreate } = this;
+        const overflowCondition = ''
+        if (this.props.topics.length > 5){
+            overflowCondition = 'scroll'
+        }
 
         return (
             <div class="systemTopicButtonBox">
                 <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
                 <span>Select the topic!</span>
-                <Segment.Group>
-                    <Segment textAlign='center'>
-                        <Button fluid onClick={handleCreate.bind(this, TopicList[0], 0)}>{TopicList[0]}</Button>
-                            <div style={{height: '10px'}}></div>
-                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[1], 1)}>{TopicList[1]}</Button>
-                            <div style={{height: '10px'}}></div>
-                        <Button disabled fluid onClick={handleCreate.bind(this,TopicList[2], 2)}>{TopicList[2]}</Button>
-                    </Segment>
-                </Segment.Group>
+                <div style={{height:'15px'}}></div>
+                <div style={{width: '100%', maxHeight: '200px', overflowY: {overflowCondition}}}>
+                    <Segment.Group>
+                        <Segment textAlign='center'>
+                            {Object.keys(this.props.topics).map(id => {
+                                const topic = this.props.topics[id];
+                                return (
+                                    <div key={id}>
+                                    { id === '0'
+                                        ?   null
+                                        :   <div style={{height: '10px'}}></div>
+                                    } 
+                                    <Button fluid onClick={handleCreate.bind(this, topic, id)}>{topic.value}</Button>
+                                    </div>
+                                );
+                            })}
+                        </Segment>
+                    </Segment.Group>
+                </div>
             </div>
         );
     }
