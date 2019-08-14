@@ -146,6 +146,7 @@ export class ChatRoom extends Component {
     // Initialize the messageList when a new conversation starts
     startConversation = () => {
         this.num_experiment ++;
+        this._get();
 	    this.curNode = this.conversationTree;
         this.setState({
             messageList: [
