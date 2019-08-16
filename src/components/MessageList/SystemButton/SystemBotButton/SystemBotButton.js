@@ -9,6 +9,7 @@ const databaseURL = "https://protobot-rawdata.firebaseio.com/";
 export class SystemBotButton extends Component {
     extension = '.json';
     addedpath = '';
+    overflowCondition: '';
 
     constructor(props) {
         super(props);
@@ -85,21 +86,20 @@ export class SystemBotButton extends Component {
         const { inputState, input } = this.state;
         const { AnswerList } = this.props;
         const { handleSelect, changeInputState, handleChangeText, handleCreate, handleKeyPress } = this;
-        const overflowCondition = ''
-        if (AnswerList.length > 5){
-            overflowCondition = 'scroll'
+        if (Object.keys(AnswerList).length > 4){
+            this.overflowCondition = 'scroll'
         }
 
         return (
             <div class="systemBotButtonBox">
-                <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
-                <span>
+                {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
+                <span style={{fontWeight: 'bold'}}>
                     {(AnswerList === 0)
                         ?   'Add new answer!'
                         :   'Select the appropriate answer or add new answer of the bot!'
                     }
                 </span>
-                <div style={{width: '100%', maxHeight: '250px', overflowY: {overflowCondition}}}>
+                <div style={{width: '100%', marginTop:"10px" ,maxHeight: '250px', overflowY:  this.overflowCondition}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
                             { inputState

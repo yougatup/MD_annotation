@@ -35,18 +35,14 @@ export class ChatRoom extends Component {
             type: 'user',
             originResponse: '',
             messageList: [
-                { id: 0, type: 'system', time: null, text: 'Lets start ' + this.num_experiment + ' conversation!'},
+                { id: 0, type: 'system', time: null, text: "Let's start " + 'conversation ' + this.num_experiment},
             ],
 
             // Data lists for conversation flow
             AnswerList: [
-                {text: "haha"}, 
-                {text: "blahblah"}
 	        ],
 
             otherResponseList: [
-                {text: "Hello"}, 
-                {text: "World!"}
             ],
 
             // Status for controlling chatflow
@@ -147,12 +143,13 @@ export class ChatRoom extends Component {
     startConversation = () => {
         this.num_experiment ++;
         this._get();
-	    this.curNode = this.conversationTree;
+        this.curPath = '/topics/';
         this.setState({
             messageList: [
                 { id: 0, type: 'system', time: null, text: 'Lets start '+ this.num_experiment + ' conversation!'}
             ],
             startSession: true,
+            curState: {},
         })
     }
 
@@ -331,8 +328,8 @@ export class ChatRoom extends Component {
         } = this;
 
         const sysNotice = [
-            { id: 0, type: 'system', time: null, text: "Now, it's User turn!"},
-            { id: 1, type: 'loading', time: null, text: "  "},
+            { id: 0, type: 'system', time: null, text: "Now, it's User turn!\n\nPlease enter your response as a user in the input field at the bottom of the page."},
+            { id: 2, type: 'loading', time: null, text: "  "},
         ];
 
         return (

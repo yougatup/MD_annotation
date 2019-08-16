@@ -15,8 +15,8 @@ export class Message extends Component {
                     (() => {
                         if (type === 'system') 
                             return (<div class="messageSectionSystem">
-                                        <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
-                                        <span>{text}</span>
+                                        {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
+                                        <span style={{fontWeight: "bold", whiteSpace: 'pre-wrap'}}>{text}</span>
                                     </div>);
                         if (type === 'bot')
                             return  (<div class="messageSection messageSectionBot">

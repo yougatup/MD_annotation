@@ -7,6 +7,7 @@ const databaseURL = "https://protobot-rawdata.firebaseio.com/";
 export class SystemUserButton extends Component {
     extension = '.json';
     addedpath = '';
+    overflowCondition: '';
 
     constructor(props) {
         super(props);
@@ -49,19 +50,20 @@ export class SystemUserButton extends Component {
     render() {
         const { otherResponseList } = this.props;
         const { handleCreate, handleNotapplicable } = this;
-        const overflowCondition = ''
-        if (otherResponseList.length > 5){
-            overflowCondition = 'scroll'
+        if (Object.keys(otherResponseList).length > 5){
+            this.overflowCondition = 'scroll'
         }
 
         return (
             <div class="systemUserButtonBox">
-                <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
-                <span>Select the similar response with your response!</span>
-                <div style={{width: '100%', maxHeight: '250px', overflowY: {overflowCondition}}}>
+                {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
+                <span style={{fontWeight: 'bold'}}>
+                    Select the similar response with your response!
+                </span>
+                <div style={{width: '100%', marginTop: "10px", maxHeight: '250px', overflowY: this.overflowCondition}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
-                            <Button fluid negative onClick={handleNotapplicable}>해당 없음</Button>
+                            <Button fluid negative onClick={handleNotapplicable}>Nothing to select</Button>
                             {Object.keys(otherResponseList).map(id => {
                                 const response = otherResponseList[id];
                                 return (

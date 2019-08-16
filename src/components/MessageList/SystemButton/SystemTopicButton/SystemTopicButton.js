@@ -24,8 +24,8 @@ export class SystemTopicButton extends Component {
 
         return (
             <div class="systemTopicButtonBox">
-                <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span>
-                <span>Select the topic!</span>
+                {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
+                <span style={{fontWeight: 'bold'}}>Select the topic!</span>
                 <div style={{height:'15px'}}></div>
                 <div style={{width: '100%', maxHeight: '200px', overflowY: {overflowCondition}}}>
                     <Segment.Group>
