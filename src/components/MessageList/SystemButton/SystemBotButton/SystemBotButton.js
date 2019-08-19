@@ -92,8 +92,7 @@ export class SystemBotButton extends Component {
 
         return (
             <div class="systemBotButtonBox">
-                {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
-                <span style={{fontWeight: 'bold'}}>
+                <span class="systemBotText">
                     {(AnswerList === 0)
                         ?   'Add new answer!'
                         :   'Select the appropriate answer or add new answer of the bot!'

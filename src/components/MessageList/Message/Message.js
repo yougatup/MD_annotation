@@ -15,7 +15,6 @@ export class Message extends Component {
                     (() => {
                         if (type === 'system') 
                             return (<div class="messageSectionSystem">
-                                        {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
                                         <span style={{fontWeight: "bold", whiteSpace: 'pre-wrap'}}>{text}</span>
                                     </div>);
                         if (type === 'bot')
@@ -36,7 +35,7 @@ export class Message extends Component {
                             return (<div class="messageSection messageSectionUser">
                                         <img src={user} alt="User"/>
                                         <div class="messageSectionCenter">
-                                            <span class="messageSectionBody"><img src={loading}/></span>
+                                            <span class="messageSectionBody"><img src={loading} alt="Bot"/></span>
                                         </div>
                                     </div>);
                     })()

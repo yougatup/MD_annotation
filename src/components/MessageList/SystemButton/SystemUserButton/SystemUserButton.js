@@ -56,8 +56,7 @@ export class SystemUserButton extends Component {
 
         return (
             <div class="systemUserButtonBox">
-                {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
-                <span style={{fontWeight: 'bold'}}>
+                <span class="systemUserText">
                     Select the similar response with your response!
                 </span>
                 <div style={{width: '100%', marginTop: "10px", maxHeight: '250px', overflowY: this.overflowCondition}}>
