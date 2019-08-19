@@ -3,6 +3,8 @@ import { Segment, Button } from 'semantic-ui-react';
 import './SystemTopicButton.css';
 
 export class SystemTopicButton extends Component {
+    overflowCondition = ''
+
     constructor(props) {
         super(props);
         this.state = {
@@ -17,9 +19,8 @@ export class SystemTopicButton extends Component {
 
     render() {
         const { handleCreate } = this;
-        const overflowCondition = ''
         if (this.props.topics.length > 5){
-            overflowCondition = 'scroll'
+            this.overflowCondition = 'scroll'
         }
 
         return (
@@ -27,7 +28,7 @@ export class SystemTopicButton extends Component {
                 {/* <span style={{fontWeight: "bold", fontSize: "13px"}}>System : </span> */}
                 <span style={{fontWeight: 'bold'}}>Select the topic!</span>
                 <div style={{height:'15px'}}></div>
-                <div style={{width: '100%', maxHeight: '200px', overflowY: {overflowCondition}}}>
+                <div style={{width: '100%', maxHeight: '200px', overflowY: this.overflowCondition}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
                             {Object.keys(this.props.topics).map(id => {

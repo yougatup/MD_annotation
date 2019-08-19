@@ -1,5 +1,5 @@
 import * as firebase from 'firebase'
-let database;
+// let database
 let config = {
     apiKey: "AIzaSyDbwDq8QfVoDbMNJCwlkSzfot0rK-gAxmg",
     authDomain: "protobot-rawdata.firebaseapp.com",
@@ -14,5 +14,5 @@ export const fire = () => {
     if (!firebase.apps.length) {
         firebase.initializeApp(config);
     }
-  database = firebase.database()
+  // database = firebase.database()
 }

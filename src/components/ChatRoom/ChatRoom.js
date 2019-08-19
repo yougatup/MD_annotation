@@ -46,9 +46,9 @@ export class ChatRoom extends Component {
             ],
 
             // Status for controlling chatflow
+            inputButtonState: false,
             startSession: true,
             turnNotice: false,
-            startConversationStatus: false,
             selectBotStatus: true,
             similarUserStatus: true,
             depth: 0,
@@ -74,7 +74,6 @@ export class ChatRoom extends Component {
 
     componentDidMount() {
         this._get();
-        // this.scrollToBottom();
     }
     
     componentDidUpdate() {
@@ -92,7 +91,6 @@ export class ChatRoom extends Component {
             this.startConversation();
             controlStartStatus();
         }
-
         this.scrollToBottom();
     }
 
@@ -119,10 +117,11 @@ export class ChatRoom extends Component {
     // Notice the turn of user to user
     changeTurnNotice = () => {
         const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         setTimeout(() => {
-            controlEndButtonStatus();
             this.setState(prevState => ({
                 turnNotice: !prevState.turnNotice,
+                inputButtonState: true,
             }));
             controlEndButtonStatus();
         }, 900);
@@ -132,7 +131,7 @@ export class ChatRoom extends Component {
     resetMessageList = () => {
         this.setState({
             messageList: [
-                { id: 0, type: 'system', time: null, text: 'End the '+ this.num_experiment + ' conversation!'},
+                { id: 0, type: 'system', time: null, text: 'End the '+ 'conversation ' + this.num_experiment},
                 { id: 1, type: 'system', time: null, text: 'Click the [Next Conversation] Button in below'}
             ],
         })
@@ -146,7 +145,7 @@ export class ChatRoom extends Component {
         this.curPath = '/topics/';
         this.setState({
             messageList: [
-                { id: 0, type: 'system', time: null, text: 'Lets start '+ this.num_experiment + ' conversation!'}
+                { id: 0, type: 'system', time: null, text: 'Lets start ' + 'conversation ' + + this.num_experiment}
             ],
             startSession: true,
             curState: {},
@@ -157,8 +156,8 @@ export class ChatRoom extends Component {
     // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus'
     updateRenderUntilSysBot(){
         const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         setTimeout(() => {
-            controlEndButtonStatus();
             this.setState(prevState => ({
                 selectBotStatus: !prevState.selectBotStatus
             }));
@@ -170,11 +169,11 @@ export class ChatRoom extends Component {
     // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus' function
     updateRenderUntilUserBot(){
         const { controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         setTimeout(() => {
-            controlEndButtonStatus();
             this.setOtherResponseList();
             this.setState(prevState => ({
-                similarUserStatus: !prevState.similarUserStatus
+                similarUserStatus: !prevState.similarUserStatus,
             }));
             controlEndButtonStatus();
         }, 1000);
@@ -189,7 +188,6 @@ export class ChatRoom extends Component {
         controlEndButtonStatus();
         this.setState({
             startSession: false,
-            startConversationStatus: true,
             messageList: messageList.concat({
                 id: this.id++,
                 type: 'user',
@@ -299,6 +297,7 @@ export class ChatRoom extends Component {
             input: '',
             turnNotice: false,
             originResponse: input,
+            inputButtonState: false,
             messageList: messageList.concat({
                 id: this.id++,
                 type: type,
@@ -317,7 +316,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, originResponse, topics, messageList, AnswerList, otherResponseList, turnNotice, startSession, startConversationStatus, selectBotStatus, similarUserStatus } = this.state;
+        const { input, time, originResponse, topics, messageList, AnswerList, otherResponseList, inputButtonState, turnNotice, startSession, selectBotStatus, similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -337,7 +336,7 @@ export class ChatRoom extends Component {
                     <div class="chatInnerBox">
                         <main class="chatRoom">
                             <div class="dateSection">
-                                <span>Wednesday, July 23, 2019</span>
+                                <span>{time.toLocaleTimeString()}</span>
                             </div>
                             <MessageList messageList={messageList}/>
                             {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic}/> : null}
@@ -353,7 +352,7 @@ export class ChatRoom extends Component {
                         </main>
                         <div class="textInputBox">
                             <div class="textInputBoxInput">
-                                {(similarUserStatus && selectBotStatus && startConversationStatus)
+                                {inputButtonState
                                     ?   <Input fluid type='text' placeholder='Type...' action>
                                             <Label color={'violet'}>
                                                 <Image avatar spaced='right' src={user} />
