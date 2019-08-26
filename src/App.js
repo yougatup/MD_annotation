@@ -15,15 +15,25 @@ class App extends Component{
       // Check the conversation status
       end: false,
       start: false,
+      
+      // Control the requirementList
+      requirement: [],
 
       // Control each button's disabled status
       endButtonStatus: false,
       nextButtonStatus: false,
     };
+    this.setStateRequirment = this.setStateRequirment.bind(this);
     this.controlEndButtonStatus = this.controlEndButtonStatus.bind(this);
     this.controlNextButtonStatus = this.controlNextButtonStatus.bind(this);
     this.controlEndStatus = this.controlEndStatus.bind(this);
     this.controlStartStatus = this.controlStartStatus.bind(this);
+  }
+
+  setStateRequirment = (requirement) => {
+    this.setState({
+        requirement: requirement
+    })
   }
 
   // Control the 'endButtonStatus'
@@ -55,13 +65,16 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus } = this.state;
-    const { controlEndButtonStatus, controlNextButtonStatus, controlEndStatus, controlStartStatus } = this;
+    const { end, start, endButtonStatus, nextButtonStatus, requirement } = this.state;
+    const { controlEndButtonStatus, controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment } = this;
     
     return (
       <div class="backGround">
         <div class="leftSideBar">
-          <LeftSideBar />
+          <LeftSideBar 
+            requirement={requirement}
+            start={start}
+          />
         </div>
         <main class="chatGrid chatStyle">
           <ChatRoom 
@@ -70,6 +83,7 @@ class App extends Component{
             controlEndButtonStatus={controlEndButtonStatus}
             controlEndStatus={controlEndStatus}
             controlStartStatus={controlStartStatus}
+            setStateRequirment={setStateRequirment}
           />
         </main>
         <div class="rightSideBar">

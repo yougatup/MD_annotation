@@ -19,24 +19,24 @@ export class Message extends Component {
                                     </div>);
                         if (type === 'bot')
                             return  (<div class="messageSection messageSectionBot">
-                                        <span class="messageSectionTime">{time}</span>
-                                        <span class="messageSectionBody">{text}</span>
                                         <img src={bot} alt="Bot"/>
+                                        <span class="messageSectionBody">{text}</span>
+                                        <span class="messageSectionTime">{time}</span>
                                     </div>);
                         if (type === 'user')
                             return (<div class="messageSection messageSectionUser">
-                                        <img src={user} alt="User"/>
+                                        <span class="messageSectionTime">{time}</span>
                                         <div class="messageSectionCenter">
                                             <span class="messageSectionBody">{text}</span>
                                         </div>
-                                        <span class="messageSectionTime">{time}</span>
+                                        <img src={user} alt="User"/>
                                     </div>);
                         if (type === 'loading')
                             return (<div class="messageSection messageSectionUser">
-                                        <img src={user} alt="User"/>
                                         <div class="messageSectionCenter">
                                             <span class="messageSectionBody"><img src={loading} alt="Bot"/></span>
                                         </div>
+                                        <img src={user} alt="User"/>
                                     </div>);
                     })()
                 }

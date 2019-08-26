@@ -16,13 +16,16 @@ export class SystemBotButton extends Component {
         this.state = { 
             input: '',
             inputState: true,
+            // requirementList: [],
         };
+        // this._get = this._get.bind(this);
         this._post = this._post.bind(this);
         this.sendAnswer = this.sendAnswer.bind(this);
         this.changeInputState = this.changeInputState.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
         this.handleSelect = this.handleSelect.bind(this);
+        this.handleRequirement = this.handleRequirement.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
@@ -68,12 +71,37 @@ export class SystemBotButton extends Component {
     // Add New answer of Bot, state: true
     handleCreate = () => {
         const { input } = this.state;
-        const newAnswer = {value: input, children: {}}
+        const newAnswer = {value: input, type: 'bot', children: {}}
         this.setState({
             input: '',
         })
         // Adding new answer(Bot)
         this._post(newAnswer);
+    }
+
+    handleRequirement = (requirement) => {
+        const { changeRequirment, AnswerList } = this.props;
+        let present = false;
+        let p_id = null;
+        let p_answer = null;
+
+        Object.keys(AnswerList).map(id => {
+            const answer = AnswerList[id];
+            if(answer.type === requirement.requirement){
+                present = true;
+                p_id = id
+                p_answer = answer
+            }
+        })
+
+        if(present === true){
+            changeRequirment(requirement)
+            this.handleSelect(p_answer, p_id);
+        } else {
+            const newAnswer = {value: requirement.text, type: requirement.requirement, children:{}}
+            changeRequirment(requirement);
+            this._post(newAnswer);
+        }
     }
 
     handleKeyPress = (e) => {
@@ -84,8 +112,8 @@ export class SystemBotButton extends Component {
 
     render() {
         const { inputState, input } = this.state;
-        const { AnswerList } = this.props;
-        const { handleSelect, changeInputState, handleChangeText, handleCreate, handleKeyPress } = this;
+        const { AnswerList, requirementList } = this.props;
+        const { handleSelect, changeInputState, handleChangeText, handleCreate, handleKeyPress, handleRequirement } = this;
         if (Object.keys(AnswerList).length > 4){
             this.overflowCondition = 'scroll'
         }
@@ -114,15 +142,32 @@ export class SystemBotButton extends Component {
                             }
                             {Object.keys(AnswerList).map(id => {
                                 const answer = AnswerList[id];
-                                return (
+                                return answer.type === 'bot' ? 
                                     <div key={id}>
-                                    <div style={{height: '10px'}}></div>
-                                    <Button fluid onClick={handleSelect.bind(this, answer, id)}>{answer.value}</Button>
+                                        <div style={{height: '10px'}}></div>
+                                        <Button fluid onClick={handleSelect.bind(this, answer, id)}>{answer.value}</Button>
                                     </div>
-                                );
+                                    : null
                             })}
                         </Segment>
                     </Segment.Group>
+                    { requirementList.length === 0
+                        ? null
+                        : <Segment.Group>
+                            <Segment textAlign='center' color='teal'>
+                                <div class="systemBotText">Requirement List</div>
+                                {requirementList.map((requirement, id) => {
+                                    return(
+                                        <div key={id}>
+                                            <div style={{height: '10px'}}></div>
+                                            <Button fluid color='teal' onClick={handleRequirement.bind(this, requirement, id)}>{requirement.text}</Button>
+                                        </div>
+                                        )
+                                    })
+                                }
+                            </Segment>
+                        </Segment.Group>
+                    }
                 </div>
             </div>
         );

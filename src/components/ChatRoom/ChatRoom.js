@@ -39,11 +39,9 @@ export class ChatRoom extends Component {
             ],
 
             // Data lists for conversation flow
-            AnswerList: [
-	        ],
-
-            otherResponseList: [
-            ],
+            AnswerList: [],
+            requirementList: [],
+            otherResponseList: [],
 
             // Status for controlling chatflow
             inputButtonState: false,
@@ -55,11 +53,13 @@ export class ChatRoom extends Component {
         };
         
 	    // this.curNode = this.conversationTree;
-	    this._get = this._get.bind(this);
+	    this._getTopics = this._getTopics.bind(this);
+	    this._getRequirements = this._getRequirements.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
         this.startConversation = this.startConversation.bind(this);
+        this.changeRequirment = this.changeRequirment.bind(this);
         this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
         this.updateRenderUntilUserBot = this.updateRenderUntilUserBot.bind(this);
         this.selectTopic = this.selectTopic.bind(this);
@@ -73,7 +73,8 @@ export class ChatRoom extends Component {
     /* A. Lifecycle Function */
 
     componentDidMount() {
-        this._get();
+        this._getTopics();
+        this._getRequirements();
     }
     
     componentDidUpdate() {
@@ -98,13 +99,26 @@ export class ChatRoom extends Component {
     //-----------------------
     // function for tree data import
     // ----------------------
-    _get() {
+    _getTopics() {
         fetch(`${databaseURL}/topics.json`).then(res => {
             if(res.status !== 200) {
                 throw new Error(res.statusText);
             }
             return res.json();
         }).then(topics => this.setState({topics: topics}));
+    }
+
+    _getRequirements() {
+        fetch(`${databaseURL}/topics/1/requirementList.json`).then(res => {
+            if(res.status !== 200) {
+                throw new Error(res.statusText);
+            }
+            return res.json();
+        }).then(requirementList => {
+            // const {setStateRequirment} = this.props;
+            this.setState({requirementList: requirementList})
+            // setStateRequirment(requirementList)
+        });
     }
 
     /* C. Controlling Functions */
@@ -141,7 +155,8 @@ export class ChatRoom extends Component {
     // Initialize the messageList when a new conversation starts
     startConversation = () => {
         this.num_experiment ++;
-        this._get();
+        this._getTopics();
+        this._getRequirements();
         this.curPath = '/topics/';
         this.setState({
             messageList: [
@@ -150,6 +165,18 @@ export class ChatRoom extends Component {
             startSession: true,
             curState: {},
         })
+    }
+
+    // changeRequirment the requirmentList
+    changeRequirment = (requirement) => {
+        const { requirementList } = this.state;
+        const {setStateRequirment} = this.props;
+
+        this.setState({
+            selectBotStatus: true,
+            requirementList: requirementList.filter(r => r.requirement !== requirement.requirement)
+        })
+        setStateRequirment(requirement)
     }
 
     // Set interval btw user response and SystemBotButton
@@ -316,7 +343,11 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, time, originResponse, topics, messageList, AnswerList, otherResponseList, inputButtonState, turnNotice, startSession, selectBotStatus, similarUserStatus } = this.state;
+        const { input, time, originResponse, 
+            topics, messageList, AnswerList, requirementList,
+            otherResponseList, inputButtonState, 
+            turnNotice, startSession, selectBotStatus, 
+            similarUserStatus } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -324,6 +355,7 @@ export class ChatRoom extends Component {
             selectTopic,
             selectAnswer,
             similarResponse,
+            changeRequirment,
         } = this;
 
         const sysNotice = [
@@ -346,7 +378,13 @@ export class ChatRoom extends Component {
                                                             otherResponseList={otherResponseList}
                                                             curPath={this.curPath}
                                                         />}
-                            {selectBotStatus ? null : <SystemBotButton selectAnswer={selectAnswer} AnswerList={AnswerList} curPath={this.curPath}/>}
+                            {selectBotStatus ? null : <SystemBotButton 
+                                                        selectAnswer={selectAnswer}
+                                                        AnswerList={AnswerList}
+                                                        curPath={this.curPath}
+                                                        requirementList={requirementList}
+                                                        changeRequirment={changeRequirment}
+                                                        />}
                             {turnNotice ? <MessageList messageList={sysNotice}/> : null}
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>

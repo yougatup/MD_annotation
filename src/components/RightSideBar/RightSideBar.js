@@ -45,8 +45,7 @@ export class RightSideBar extends Component {
                 ...colors.slice(num_experiment + 1)
             ]
         })
-        console.log(num_experiment, colors);
-        
+
         //change the status
         controlStartStatus();
 
