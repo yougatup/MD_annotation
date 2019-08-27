@@ -15,12 +15,16 @@ export class LeftSideBar extends Component {
 	    this.changeCheckedRequirement = this.changeCheckedRequirement.bind(this);
     }
 
-    componentDidMount() {
-        this._getRequirements();
-    }
-
     componentDidUpdate(prevProps, prevState) {
-        if (this.props.start === true){
+        if (prevProps.end !== this.props.end){
+            if(this.props.end){
+                this.setState({
+                    r_List: []
+                });
+                this.props.initializeTopicPath()
+            }
+        }
+        if (prevProps.topicPath !== this.props.topicPath){
             this._getRequirements();
         }
         if (prevProps.requirement !== this.props.requirement){
@@ -29,7 +33,7 @@ export class LeftSideBar extends Component {
     }
 
     _getRequirements() {
-        fetch(`${databaseURL}/topics/1/requirementList.json`).then(res => {
+        fetch(`${databaseURL+this.props.topicPath}`).then(res => {
             if(res.status !== 200) {
                 throw new Error(res.statusText);
             }
@@ -59,38 +63,47 @@ export class LeftSideBar extends Component {
     }
 
     render() {
+        const {annotation} = this.props
         const {r_List} = this.state
         return (
             <div class="leftGrid">
                 <div class="protobotLogo">Protobot</div>
-                <div class="leftInsBox">
-                    <div class="textCenter">
-                        <span style={{fontSize: '20px', color: '#E8EAF6'}}>Requirement List</span>
-                        <div style={{height:'25px'}}></div>
-                        {r_List.map((requirement, i) => {
-                            return requirement.checked
-                                ?   <div>
-                                        <div style={{height:'10px'}}></div>
-                                        <div class="ui checked checkbox">
-                                            <input type="checkbox" checked="true" class="hidden" readonly="" tabindex={i}/>
-                                            <label style={{color:'white'}}>{requirement.requirement}</label>
-                                        </div>
-                                    </div>
-                                :   <div>
-                                        <div style={{height:'10px'}}></div>
-                                        <div class="ui checked checkbox">
-                                            <input type="checkbox" class="hidden" readonly="" tabindex={i}/>
-                                            <label style={{color:'white'}}>{requirement.requirement}</label>
-                                        </div>
-                                    </div>
-                            })
+                <div class="sessionBox">
+                        { annotation
+                            ?   'Annotation Session'
+                            :   'Conversation Session'
                         }
-                    </div>
                 </div>
-                <div class="leftInfoBox">
-                    <div class="textCenter">
-                    </div>
-                </div>
+                { annotation
+                    ? null
+                    :   <div class="leftInsBox">
+                            <div class="leftInsBoxText">
+                                { r_List.length === 0
+                                    ?   null
+                                    :   <span style={{fontSize: '20px', color: '#E8EAF6', fontWeight: 'bold'}}>Requirement List</span>
+                                }
+                                <div style={{height:'25px'}}></div>
+                                {r_List.map((requirement, i) => {
+                                    return requirement.checked
+                                        ?   <div>
+                                                <div style={{height:'10px'}}></div>
+                                                <div class="ui checked checkbox">
+                                                    <input type="checkbox" checked="true" class="hidden" readonly="" tabindex={i}/>
+                                                    <label style={{color:'white'}}>{requirement.requirement}</label>
+                                                </div>
+                                            </div>
+                                        :   <div>
+                                                <div style={{height:'10px'}}></div>
+                                                <div class="ui checked checkbox">
+                                                    <input type="checkbox" class="hidden" readonly="" tabindex={i}/>
+                                                    <label style={{color:'white'}}>{requirement.requirement}</label>
+                                                </div>
+                                            </div>
+                                    })
+                                }
+                            </div>
+                        </div>
+                }
             </div>
         );
     }

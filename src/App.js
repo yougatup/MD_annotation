@@ -15,15 +15,21 @@ class App extends Component{
       // Check the conversation status
       end: false,
       start: false,
+      topicPath: '',
       
       // Control the requirementList
       requirement: [],
+
+      // Control the annotation session
+      annotation: false,
 
       // Control each button's disabled status
       endButtonStatus: false,
       nextButtonStatus: false,
     };
     this.setStateRequirment = this.setStateRequirment.bind(this);
+    this.controlAnnotation = this.controlAnnotation.bind(this);
+    this.topicConvey = this.topicConvey.bind(this);
     this.controlEndButtonStatus = this.controlEndButtonStatus.bind(this);
     this.controlNextButtonStatus = this.controlNextButtonStatus.bind(this);
     this.controlEndStatus = this.controlEndStatus.bind(this);
@@ -36,11 +42,43 @@ class App extends Component{
     })
   }
 
+  controlAnnotation = (bool) => {
+    this.setState({
+      annotation: bool
+    })
+  }
+
+  topicConvey = (path) => {
+    this.setState({
+      topicPath: path
+    })
+  }
+
+  initializeTopicPath = () => {
+    this.setState({
+      topicPath: '',
+    })
+  }
+
   // Control the 'endButtonStatus'
   controlEndButtonStatus = () => {
     this.setState(prevState => ({
       endButtonStatus: !prevState.endButtonStatus,
     }));
+  }
+
+  // Control the 'endButtonStatus'
+  blockEndButtonStatus = () => {
+    this.setState({
+      endButtonStatus: false,
+    })
+  }
+
+  // Control the 'endButtonStatus'
+  unblockEndButtonStatus = () => {
+    this.setState({
+      endButtonStatus: true,
+    })
   }
 
   // Control the 'nextButtonStatus'
@@ -65,25 +103,36 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, requirement } = this.state;
-    const { controlEndButtonStatus, controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment } = this;
+    const { end, start, endButtonStatus, nextButtonStatus, requirement, annotation, topicPath } = this.state;
+    const { controlEndButtonStatus, initializeTopicPath, blockEndButtonStatus, unblockEndButtonStatus,
+      controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment, controlAnnotation, topicConvey } = this;
     
     return (
       <div class="backGround">
         <div class="leftSideBar">
           <LeftSideBar 
             requirement={requirement}
+            initializeTopicPath={initializeTopicPath}
+            end={end}
             start={start}
+            annotation={annotation}
+            topicPath={topicPath}
           />
         </div>
         <main class="chatGrid chatStyle">
           <ChatRoom 
             end={end}
             start={start}
+            annotation={annotation}
+            topicConvey={topicConvey}
+            controlAnnotation={controlAnnotation}
+            blockEndButtonStatus={blockEndButtonStatus}
+            unblockEndButtonStatus={unblockEndButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
             controlEndStatus={controlEndStatus}
             controlStartStatus={controlStartStatus}
             setStateRequirment={setStateRequirment}
+            controlNextButtonStatus={controlNextButtonStatus}
           />
         </main>
         <div class="rightSideBar">
@@ -94,6 +143,7 @@ class App extends Component{
             controlNextButtonStatus={controlNextButtonStatus}
             controlEndStatus={controlEndStatus} 
             controlStartStatus={controlStartStatus}
+            annotation={annotation}
           />
         </div>
       </div>

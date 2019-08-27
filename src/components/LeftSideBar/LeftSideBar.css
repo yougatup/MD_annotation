@@ -10,10 +10,18 @@
     font-size: 23px;
 }
 
+.sessionBox {
+    margin-top: 50px;
+    margin-left: 30px;
+    /* font-weight: bold; */
+    color: #EEEEEE;
+    font-size: 22px;
+}
+
 .leftInsBox {
     vertical-align: middle;
-    margin-left: 10%;
-    margin-top: 100px;
+    margin-left: 20%;
+    margin-top: 150px;
     /* background-color: #434866; */
     height: 40%;
     width: 80%;
@@ -28,15 +36,6 @@
     width: 80%;
 }
 
-.textCenter {
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    top: 50%;
-    transform: translateY(-50%);
-    color: white;
-    text-align: center;
-    
-    font-weight: bold;
+.leftInsBoxText {
     font-size: 25px;
 }

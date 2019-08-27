@@ -40,7 +40,8 @@ export class SystemBotButton extends Component {
             return res.json();
         }).then(data => {
             // Convey to Chatroom the path and answer
-            this.sendAnswer(answer, this.addedpath + data.name + '/children', true);
+            // this.sendAnswer(answer, this.addedpath + data.name + '/children', true);
+            this.sendAnswer(answer, this.addedpath + data.name, true);
         });
     }
 
@@ -64,17 +65,22 @@ export class SystemBotButton extends Component {
 
     // Select origin answer of Bot, state: false
     handleSelect = (answer, id) => {
-        const selectedPath = id + '/children';
+        // const selectedPath = id + '/children';
+        const selectedPath = id;
         this.sendAnswer(answer, selectedPath, false);
     }
 
     // Add New answer of Bot, state: true
     handleCreate = () => {
         const { input } = this.state;
-        const newAnswer = {value: input, type: 'bot', children: {}}
+        const newAnswer = {value: input, type: 'bot', tag: null, children: {}}
         this.setState({
             input: '',
         })
+
+        // Add a number of annotation which have to add by crowd
+        this.props.addNumAnnotation();
+
         // Adding new answer(Bot)
         this._post(newAnswer);
     }
@@ -98,7 +104,7 @@ export class SystemBotButton extends Component {
             changeRequirment(requirement)
             this.handleSelect(p_answer, p_id);
         } else {
-            const newAnswer = {value: requirement.text, type: requirement.requirement, children:{}}
+            const newAnswer = {value: requirement.text, type: requirement.requirement, tag: requirement.requirement, children:{}}
             changeRequirment(requirement);
             this._post(newAnswer);
         }

@@ -22,12 +22,12 @@ export class RightSideBar extends Component {
 
     // Convey the endstatus to parent component when each conversation is ended
     sendEndStatus = () => {
-        const { controlEndStatus, controlEndButtonStatus, controlNextButtonStatus } = this.props;
+        const { controlEndStatus, controlEndButtonStatus } = this.props;
         // block the 'endbutton'
         controlEndButtonStatus();
 
         // unblock the 'nextbutton'
-        controlNextButtonStatus();
+        // controlNextButtonStatus();
 
         //change the status
         controlEndStatus();
