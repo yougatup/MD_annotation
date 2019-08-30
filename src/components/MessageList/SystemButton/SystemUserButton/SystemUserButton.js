@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Segment, Button } from 'semantic-ui-react';
 import './SystemUserButton.css';
 
-const databaseURL = "https://protobot-rawdata.firebaseio.com/";
+const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
 export class SystemUserButton extends Component {
     extension = '.json';
@@ -43,9 +43,6 @@ export class SystemUserButton extends Component {
     handleNotapplicable = () => {
         const { originResponse } = this.props;
         const newResponse = {value: originResponse, type: 'user', tag: null, children: {}}
-        
-        // Add a number of annotation which have to add by crowd
-        this.props.addNumAnnotation();
         
         this._post(newResponse);
     }

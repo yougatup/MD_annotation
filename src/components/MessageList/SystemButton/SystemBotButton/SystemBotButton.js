@@ -4,7 +4,7 @@ import './SystemBotButton.css';
 
 import bot from './../../Message/images/bot.png';
 
-const databaseURL = "https://protobot-rawdata.firebaseio.com/";
+const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
 export class SystemBotButton extends Component {
     extension = '.json';
@@ -78,15 +78,12 @@ export class SystemBotButton extends Component {
             input: '',
         })
 
-        // Add a number of annotation which have to add by crowd
-        this.props.addNumAnnotation();
-
         // Adding new answer(Bot)
         this._post(newAnswer);
     }
 
     handleRequirement = (requirement) => {
-        const { changeRequirment, AnswerList } = this.props;
+        const { AnswerList } = this.props;
         let present = false;
         let p_id = null;
         let p_answer = null;
@@ -101,11 +98,9 @@ export class SystemBotButton extends Component {
         })
 
         if(present === true){
-            changeRequirment(requirement)
             this.handleSelect(p_answer, p_id);
         } else {
             const newAnswer = {value: requirement.text, type: requirement.requirement, tag: requirement.requirement, children:{}}
-            changeRequirment(requirement);
             this._post(newAnswer);
         }
     }

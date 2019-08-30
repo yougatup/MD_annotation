@@ -20,15 +20,11 @@ class App extends Component{
       // Control the requirementList
       requirement: [],
 
-      // Control the annotation session
-      annotation: false,
-
       // Control each button's disabled status
       endButtonStatus: false,
       nextButtonStatus: false,
     };
     this.setStateRequirment = this.setStateRequirment.bind(this);
-    this.controlAnnotation = this.controlAnnotation.bind(this);
     this.topicConvey = this.topicConvey.bind(this);
     this.controlEndButtonStatus = this.controlEndButtonStatus.bind(this);
     this.controlNextButtonStatus = this.controlNextButtonStatus.bind(this);
@@ -39,12 +35,6 @@ class App extends Component{
   setStateRequirment = (requirement) => {
     this.setState({
         requirement: requirement
-    })
-  }
-
-  controlAnnotation = (bool) => {
-    this.setState({
-      annotation: bool
     })
   }
 
@@ -103,9 +93,9 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, requirement, annotation, topicPath } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, requirement, topicPath } = this.state;
     const { controlEndButtonStatus, initializeTopicPath, blockEndButtonStatus, unblockEndButtonStatus,
-      controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment, controlAnnotation, topicConvey } = this;
+      controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment, topicConvey } = this;
     
     return (
       <div class="backGround">
@@ -115,7 +105,6 @@ class App extends Component{
             initializeTopicPath={initializeTopicPath}
             end={end}
             start={start}
-            annotation={annotation}
             topicPath={topicPath}
           />
         </div>
@@ -123,9 +112,7 @@ class App extends Component{
           <ChatRoom 
             end={end}
             start={start}
-            annotation={annotation}
             topicConvey={topicConvey}
-            controlAnnotation={controlAnnotation}
             blockEndButtonStatus={blockEndButtonStatus}
             unblockEndButtonStatus={unblockEndButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
@@ -143,7 +130,6 @@ class App extends Component{
             controlNextButtonStatus={controlNextButtonStatus}
             controlEndStatus={controlEndStatus} 
             controlStartStatus={controlStartStatus}
-            annotation={annotation}
           />
         </div>
       </div>

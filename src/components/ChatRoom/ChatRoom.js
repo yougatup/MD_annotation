@@ -9,7 +9,7 @@ import { SystemTopicButton } from "./../MessageList/SystemButton/SystemTopicButt
 import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/SystemBotButton.js";
 import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
-const databaseURL = "https://protobot-rawdata.firebaseio.com/";
+const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
 export class ChatRoom extends Component {
     id = 0;
@@ -38,15 +38,8 @@ export class ChatRoom extends Component {
 
             // Data lists for conversation flow
             AnswerList: [],
-            num_requirement: -1,
             requirementList: [],
             otherResponseList: [],
-
-            // Status for annotation Session
-            beforeAnnotation: false,
-            num_annotation: 0,
-            annotation: false,
-            modalOpen: true,
 
             // Status for controlling chatflow
             inputButtonState: false,
@@ -61,10 +54,8 @@ export class ChatRoom extends Component {
 	    this._getRequirements = this._getRequirements.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
-        this.changeAnnotationState = this.changeAnnotationState.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
         this.startConversation = this.startConversation.bind(this);
-        this.changeRequirment = this.changeRequirment.bind(this);
         this.updateRenderUntilSysBot = this.updateRenderUntilSysBot.bind(this);
         this.updateRenderUntilUserBot = this.updateRenderUntilUserBot.bind(this);
         this.selectTopic = this.selectTopic.bind(this);
@@ -82,31 +73,18 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        const { end, start, controlEndStatus, controlStartStatus, controlAnnotation, controlNextButtonStatus } = this.props;
+        const { end, start, controlEndStatus, controlStartStatus, controlNextButtonStatus } = this.props;
         if ( end === true ) {
             this.setState({
                 similarUserStatus: true,
                 selectBotStatus: true,
                 turnNotice: false,
-                beforeAnnotation: true,
             })
             controlEndStatus();
-            if (this.state.num_annotation === 0) {
-                controlNextButtonStatus();
-            }
+            controlNextButtonStatus();
         }
 
-        // The crowd have to go next conversation after annotating whole utterances which that crowd added
-        if (prevState.num_annotation !== this.state.num_annotation){
-            if (this.state.num_annotation === 0) {
-                controlNextButtonStatus();
-            }
-        }
         if( start === true ) {
-            this.setState({
-                modalOpen: true,
-            })
-            controlAnnotation(false);
             this.startConversation();
             controlStartStatus();
         }
@@ -135,7 +113,6 @@ export class ChatRoom extends Component {
         }).then(requirementList => {
             this.setState({
                 requirementList: requirementList,
-                num_requirement: Object.keys(requirementList).length,
             })
         });
     }
@@ -150,48 +127,14 @@ export class ChatRoom extends Component {
     // Notice the turn of user to user
     changeTurnNotice = () => {
         const { blockEndButtonStatus, unblockEndButtonStatus } = this.props;
-        if (this.state.num_requirement === 0){
-            blockEndButtonStatus();
-        }
+        blockEndButtonStatus();
         setTimeout(() => {
             this.setState(prevState => ({
                 turnNotice: !prevState.turnNotice,
                 inputButtonState: true,
             }));
-            if (this.state.num_requirement === 0){
-                unblockEndButtonStatus();
-            }
+            unblockEndButtonStatus();
         }, 900);
-    }
-
-    // Control the annotation session state
-    changeAnnotationState = () => {
-        const { controlAnnotation } = this.props;
-
-        this.setState({
-            beforeAnnotation: false,
-            // annotation: true,
-            modalOpen: false,
-        })
-        controlAnnotation(true);
-    }
-
-    // Add the num_annotation account
-    addNumAnnotation = () => {
-        const { num_annotation } = this.state;
-        this.setState({
-            num_annotation: num_annotation + 1
-        })
-        console.log(num_annotation)
-    }
-
-    // Reduce the num_annotation account
-    reduceNumAnnotation = () => {
-        const { num_annotation } = this.state;
-        this.setState({
-            num_annotation: num_annotation - 1
-        })
-        console.log(num_annotation)
     }
 
     // Reset the messageList when the conversation is ended
@@ -208,7 +151,6 @@ export class ChatRoom extends Component {
     // Initialize the messageList when a new conversation starts
     startConversation = () => {
         this.num_experiment ++;
-        this.after_require = false;
         this._getTopics();
         this.curPath = '/topics/';
         this.id = 0
@@ -222,33 +164,16 @@ export class ChatRoom extends Component {
         })
     }
 
-    // changeRequirment the requirmentList
-    changeRequirment = (requirement) => {
-        const { requirementList, num_requirement } = this.state;
-        const {setStateRequirment} = this.props;
-
-        this.setState({
-            selectBotStatus: true,
-            num_requirement: num_requirement - 1,
-            requirementList: requirementList.filter(r => r.requirement !== requirement.requirement)
-        })
-        setStateRequirment(requirement)
-    }
-
     // Set interval btw user response and SystemBotButton
     // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus'
     updateRenderUntilSysBot(){
         const { blockEndButtonStatus, unblockEndButtonStatus } = this.props;
-        if (this.state.num_requirement === 0){
-            blockEndButtonStatus();
-        }
+        blockEndButtonStatus();
         setTimeout(() => {
             this.setState(prevState => ({
                 selectBotStatus: !prevState.selectBotStatus
             }));
-            if (this.state.num_requirement === 0){
-                unblockEndButtonStatus();
-            }
+            unblockEndButtonStatus();
         }, 1000);
     }
 
@@ -256,17 +181,13 @@ export class ChatRoom extends Component {
     // For preventing the message ordering, block the endbutton during 1000ms through 'controlEndButtonStatus' function
     updateRenderUntilUserBot(){
         const { blockEndButtonStatus, unblockEndButtonStatus } = this.props;
-        if (this.state.num_requirement === 0){
-            blockEndButtonStatus();
-        }
+        blockEndButtonStatus();
         setTimeout(() => {
             this.setOtherResponseList();
             this.setState(prevState => ({
                 similarUserStatus: !prevState.similarUserStatus,
             }));
-            if (this.state.num_requirement === 0){
-                unblockEndButtonStatus();
-            }
+            unblockEndButtonStatus();
         }, 1000);
     }
 
@@ -275,8 +196,8 @@ export class ChatRoom extends Component {
     // Also unblock the endbutton through 'controlEndButtonStatus' function
     selectTopic = (dataFromChild, id) => {
         const { messageList, time } = this.state;
-        const { topicConvey } = this.props;
-        // controlEndButtonStatus();
+        const { topicConvey, controlEndButtonStatus } = this.props;
+        controlEndButtonStatus();
         topicConvey(this.curPath + id + '/requirementList.json')
         this._getRequirements(this.curPath + id + '/requirementList.json');
         this.setState({
@@ -321,7 +242,7 @@ export class ChatRoom extends Component {
 
     // Putting selected answer from the SystemBotButton
     selectAnswer = (dataFromChild, addedPath, newAnswerState) => {
-        const { messageList, time, num_requirement } = this.state;
+        const { messageList, time, } = this.state;
 
         if(newAnswerState === true) {
             this.setState({
@@ -349,11 +270,6 @@ export class ChatRoom extends Component {
                 selectBotStatus: true,
                 curState: dataFromChild.children,
             })
-        }
-
-        if ((num_requirement === 0) && (this.after_requirement === false)){
-            this.props.unblockEndButtonStatus();
-            this.after_requirement = true;
         }
 
         this.curPath = this.curPath + '/' + addedPath + '/children';
@@ -424,7 +340,7 @@ export class ChatRoom extends Component {
         const { input, time, originResponse, 
             topics, messageList, AnswerList, requirementList,
             otherResponseList, inputButtonState, 
-            turnNotice, startSession, selectBotStatus, beforeAnnotation, modalOpen,
+            turnNotice, startSession, selectBotStatus,
             similarUserStatus } = this.state;
         const {
             handleChangeText,
@@ -433,19 +349,12 @@ export class ChatRoom extends Component {
             selectTopic,
             selectAnswer,
             similarResponse,
-            changeRequirment,
-            changeAnnotationState,
-            addNumAnnotation,
-            reduceNumAnnotation
         } = this;
-        const { annotation } = this.props; 
 
         const sysNotice = [
             { id: 0, type: 'system', time: null, text: "Now, it's User turn!\n\nPlease enter your response as a user in the input field at the bottom of the page."},
             { id: 2, type: 'loading', time: null, text: "  "},
         ];
-
-        const sessionNotice = 'End the '+ 'conversation ' + this.num_experiment
 
         return (
                 <div class="chatOuterBox">
@@ -454,47 +363,23 @@ export class ChatRoom extends Component {
                             <div class="dateSection">
                                 <span>{time.toLocaleTimeString()}</span>
                             </div>
-                            { beforeAnnotation
-                                ?   <Modal
-                                        open={modalOpen}
-                                        basic
-                                        size='small'
-                                    >
-                                        <Header icon='browser' content={sessionNotice} />
-                                        <Modal.Content>
-                                        <h3>  Click the [Start Annotation] Button in below</h3>
-                                        </Modal.Content>
-                                        <Modal.Actions>
-                                        <Button color='green' onClick={changeAnnotationState} inverted>
-                                            <Icon name='checkmark' /> Start Annotation
-                                        </Button>
-                                        </Modal.Actions>
-                                    </Modal>
-                                :   null
-                            }
-                            { annotation
-                                ?   <MessageList messageList={messageList} annotation={annotation} reduceNumAnnotation={reduceNumAnnotation}/>
-                                :   <div>
-                                        <MessageList messageList={messageList}/>
-                                        {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic}/> : null}
-                                        {similarUserStatus ? null : <SystemUserButton 
-                                                                        similarResponse={similarResponse}
-                                                                        originResponse={originResponse}
-                                                                        otherResponseList={otherResponseList}
-                                                                        addNumAnnotation={addNumAnnotation}
-                                                                        curPath={this.curPath}
-                                                                    />}
-                                        {selectBotStatus ? null : <SystemBotButton 
-                                                                    selectAnswer={selectAnswer}
-                                                                    AnswerList={AnswerList}
-                                                                    curPath={this.curPath}
-                                                                    requirementList={requirementList}
-                                                                    changeRequirment={changeRequirment}
-                                                                    addNumAnnotation={addNumAnnotation}
-                                                                    />}
-                                        {turnNotice ? <MessageList messageList={sysNotice}/> : null}
-                                    </div>
-                            }
+                            <div>
+                                <MessageList messageList={messageList}/>
+                                {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic}/> : null}
+                                {similarUserStatus ? null : <SystemUserButton 
+                                                                similarResponse={similarResponse}
+                                                                originResponse={originResponse}
+                                                                otherResponseList={otherResponseList}
+                                                                curPath={this.curPath}
+                                                            />}
+                                {selectBotStatus ? null : <SystemBotButton 
+                                                            selectAnswer={selectAnswer}
+                                                            AnswerList={AnswerList}
+                                                            curPath={this.curPath}
+                                                            requirementList={requirementList}
+                                                            />}
+                                {turnNotice ? <MessageList messageList={sysNotice}/> : null}
+                            </div>
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>
                         <div class="textInputBox">
