@@ -15,8 +15,17 @@
     margin-left: 30px;
     /* font-weight: bold; */
     color: #EEEEEE;
-    font-size: 22px;
+    font-size: 19px;
 }
+
+.uIdBox {
+    margin-top: 50px;
+    margin-left: 30px;
+    font-weight: bold;
+    color: #EEEEEE;
+    font-size: 15px;
+}
+
 
 .leftInsBox {
     vertical-align: middle;

@@ -9,27 +9,31 @@ const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 export class SystemBotButton extends Component {
     extension = '.json';
     addedpath = '';
-    overflowCondition: '';
+    actionpath = '/actions'
 
     constructor(props) {
         super(props);
         this.state = { 
-            input: '',
-            inputState: true,
-            // requirementList: [],
+            response: '',
+            actionList: [],
+            deviceList: this.props.deviceList,
+            usedDeviceList: [],
         };
-        // this._get = this._get.bind(this);
-        this._post = this._post.bind(this);
+        this._postBotResponse = this._postBotResponse.bind(this);
         this.sendAnswer = this.sendAnswer.bind(this);
-        this.changeInputState = this.changeInputState.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
-        this.handleSelect = this.handleSelect.bind(this);
-        this.handleRequirement = this.handleRequirement.bind(this);
-        this.handleKeyPress = this.handleKeyPress.bind(this);
+        this.changeDeviceStatus = this.changeDeviceStatus.bind(this);
+        this.removeUsedDevice = this.removeUsedDevice.bind(this);
     }
 
-    _post(answer) {
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.targetDevice !== this.props.targetDevice){
+            this.changeDeviceStatus(this.props.targetDevice);
+        }
+    }
+
+    _postBotResponse(answer) {
         return fetch(`${databaseURL+this.props.curPath+this.extension}`, {
             method: 'POST',
             body: JSON.stringify(answer)
@@ -40,7 +44,6 @@ export class SystemBotButton extends Component {
             return res.json();
         }).then(data => {
             // Convey to Chatroom the path and answer
-            // this.sendAnswer(answer, this.addedpath + data.name + '/children', true);
             this.sendAnswer(answer, this.addedpath + data.name, true);
         });
     }
@@ -51,124 +54,120 @@ export class SystemBotButton extends Component {
         selectAnswer(answer, id, state);
     }
 
-    changeInputState = () => {
-        this.setState(prevState => ({
-            inputState: !prevState.inputState
-        }));
-    }
-
     handleChangeText = (e) => {
         this.setState({
-            input: e.target.value
+            response: e.target.value
         });
     }
 
-    // Select origin answer of Bot, state: false
-    handleSelect = (answer, id) => {
-        // const selectedPath = id + '/children';
-        const selectedPath = id;
-        this.sendAnswer(answer, selectedPath, false);
+    handleChangeAction = (name, id, e) => {
+        const { actionList } = this.state;
+        const newActionList = actionList.map((action, a_id) => {
+            if (id !== a_id) return action;
+            return {...action, action: e.target.value, device: name}
+        })
+
+        this.setState({
+            actionList: newActionList
+        })
     }
 
     // Add New answer of Bot, state: true
     handleCreate = () => {
-        const { input } = this.state;
-        const newAnswer = {value: input, type: 'bot', tag: null, children: {}}
+        const { response, actionList } = this.state;
+        const newAnswer = {value: response, type: 'bot', u_id: this.props.u_id, actionList: actionList, children: {}}
         this.setState({
-            input: '',
+            response: '',
         })
 
         // Adding new answer(Bot)
-        this._post(newAnswer);
+        this._postBotResponse(newAnswer);
     }
 
-    handleRequirement = (requirement) => {
-        const { AnswerList } = this.props;
-        let present = false;
-        let p_id = null;
-        let p_answer = null;
-
-        Object.keys(AnswerList).map(id => {
-            const answer = AnswerList[id];
-            if(answer.type === requirement.requirement){
-                present = true;
-                p_id = id
-                p_answer = answer
-            }
+    changeDeviceStatus = (device) => {
+        const { usedDeviceList, actionList, deviceList } = this.state;
+        const newDeviceList = deviceList.map((d) => {
+            if (d.name !== device.name) return d;
+            return {...d, name: d.name, selected: true}
         })
-
-        if(present === true){
-            this.handleSelect(p_answer, p_id);
-        } else {
-            const newAnswer = {value: requirement.text, type: requirement.requirement, tag: requirement.requirement, children:{}}
-            this._post(newAnswer);
-        }
+        this.setState({
+            deviceList: newDeviceList,
+            usedDeviceList: usedDeviceList.concat({
+                name: device.name
+            }),
+            actionList: actionList.concat({
+                action: ''
+            })
+        })
     }
 
-    handleKeyPress = (e) => {
-        if(e.key === 'Enter') {
-            this.handleCreate();
-        }
+    removeUsedDevice = (name, id) => {
+        const { usedDeviceList, actionList, deviceList } = this.state;
+        const newDeviceList = deviceList.map((d) => {
+            if (d.name !== name) return d;
+            return {...d, name: d.name, selected: false}
+        })
+        this.setState({
+            deviceList: newDeviceList,
+            actionList: actionList.filter((action, a_ids) => id !== a_ids),
+            usedDeviceList: usedDeviceList.filter((device, d_idx) => device.name !== name),
+        })
     }
 
     render() {
-        const { inputState, input } = this.state;
-        const { AnswerList, requirementList } = this.props;
-        const { handleSelect, changeInputState, handleChangeText, handleCreate, handleKeyPress, handleRequirement } = this;
-        if (Object.keys(AnswerList).length > 4){
-            this.overflowCondition = 'scroll'
-        }
+        const { response, usedDeviceList, actionList } = this.state;
+        const { handleChangeText, handleCreate, handleChangeAction, removeUsedDevice } = this;
 
         return (
             <div class="systemBotButtonBox">
-                <span class="systemBotText">
-                    {(AnswerList === 0)
-                        ?   'Add new answer!'
-                        :   'Select the appropriate answer or add new answer of the bot!'
-                    }
-                </span>
-                <div style={{width: '100%', marginTop:"10px" ,maxHeight: '250px', overflowY:  this.overflowCondition}}>
+                <span class="systemBotText">Add new response and actions</span>
+                <div style={{width: '100%', marginTop:"10px" ,maxHeight: '250px'}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
-                            { inputState
-                                ? <Button fluid positive onClick={changeInputState}>Add new answer</Button>
-                                : <Input fluid type='text' placeholder='Type your answer...' action>
-                                    <Label color={'green'}>
-                                        <Image avatar spaced='right' src={bot} />
-                                        Bot
-                                    </Label>    
-                                    <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
-                                    <Button positive type='submit' onClick={handleCreate}>Add</Button>
-                                </Input>
-                            }
-                            {Object.keys(AnswerList).map(id => {
-                                const answer = AnswerList[id];
-                                return answer.type === 'bot' ? 
-                                    <div key={id}>
+                            <Input fluid type='text' placeholder="Type bot's response..." action>
+                                <Label>
+                                    <Image avatar spaced='right' src={bot} />
+                                    Bot Response
+                                </Label>    
+                                <input value={response} onChange={handleChangeText}/>
+                            </Input>
+                            {usedDeviceList.map((device, id) => {
+                                return(
+                                    <div className="action" key={id}>
                                         <div style={{height: '10px'}}></div>
-                                        <Button fluid onClick={handleSelect.bind(this, answer, id)}>{answer.value}</Button>
+                                        <div class="ui fluid labeled input">
+                                            <div class="ui label label">{device.name}</div>
+                                            <input value={actionList.name} placeholder="type device's action" onChange={(e) => handleChangeAction(device.name, id, e)}/>
+                                            <Button negative type='cancle' onClick={(e) => removeUsedDevice(device.name, id)}>Cancel</Button>
+                                        </div>
                                     </div>
-                                    : null
-                            })}
+                                    )
+                                })
+                            }
+                            <div style={{height: '15px'}}></div>
+                            { response !== ''
+                                ?   <Button fluid positive type='submit' onClick={handleCreate}>Add new response</Button>
+                                :   <Button disabled fluid positive type='submit' onClick={handleCreate}>Add new response</Button>
+                            }
                         </Segment>
                     </Segment.Group>
-                    { requirementList.length === 0
-                        ? null
-                        : <Segment.Group>
+                    {/* <Segment.Group>
                             <Segment textAlign='center' color='teal'>
-                                <div class="systemBotText">Requirement List</div>
-                                {requirementList.map((requirement, id) => {
+                                <div class="systemBotText">Available Devices</div>
+                                {deviceList.map((device, id) => {
                                     return(
                                         <div key={id}>
                                             <div style={{height: '10px'}}></div>
-                                            <Button fluid color='teal' onClick={handleRequirement.bind(this, requirement, id)}>{requirement.text}</Button>
+                                            { device.selected
+                                                ?   <Button disabled fluid color='teal'>{device.name}</Button>
+                                                :   <Button fluid color='teal' onClick={changeDeviceStatus.bind(this, device)}>{device.name}</Button>
+                                            }
                                         </div>
                                         )
                                     })
                                 }
                             </Segment>
-                        </Segment.Group>
-                    }
+                    </Segment.Group> */}
                 </div>
             </div>
         );

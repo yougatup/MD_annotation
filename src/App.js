@@ -12,41 +12,68 @@ class App extends Component{
     super(props);
     fire();
     this.state = {
+      u_id: '',
+
       // Check the conversation status
       end: false,
       start: false,
-      topicPath: '',
       
-      // Control the requirementList
-      requirement: [],
+      // Control the device
+      devicePath: '',
+      botTurnStatus: false,
+      targetDevice: '',
 
       // Control each button's disabled status
       endButtonStatus: false,
       nextButtonStatus: false,
     };
-    this.setStateRequirment = this.setStateRequirment.bind(this);
-    this.topicConvey = this.topicConvey.bind(this);
+    this.deviceListConvey = this.deviceListConvey.bind(this);
+    this.initializeDevicePath = this.initializeDevicePath.bind(this);
+    this.changeBotTurnStatus = this.changeBotTurnStatus.bind(this);
+    this.setTargetDevice = this.setTargetDevice.bind(this);
     this.controlEndButtonStatus = this.controlEndButtonStatus.bind(this);
     this.controlNextButtonStatus = this.controlNextButtonStatus.bind(this);
     this.controlEndStatus = this.controlEndStatus.bind(this);
     this.controlStartStatus = this.controlStartStatus.bind(this);
   }
 
-  setStateRequirment = (requirement) => {
+  componentDidMount() {
+    this.idGeneration();
+  }
+
+  idGeneration = () => {
+    let string = ''
+
+    for (var i=0; i<2; i++){
+      string = string + Math.floor((1+Math.random()) * 0x10000).toString(16).substring(1)
+    }
+
     this.setState({
-        requirement: requirement
+      u_id: string
     })
   }
 
-  topicConvey = (path) => {
+  deviceListConvey = (path) => {
     this.setState({
-      topicPath: path
+      devicePath: path
     })
   }
 
-  initializeTopicPath = () => {
+  initializeDevicePath = () => {
     this.setState({
-      topicPath: '',
+      devicePath: '',
+    })
+  }
+
+  changeBotTurnStatus = (bool) => {
+    this.setState({
+      botTurnStatus: bool,
+    })
+  }
+
+  setTargetDevice = (target) => {
+    this.setState({
+      targetDevice: target,
     })
   }
 
@@ -93,43 +120,46 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, requirement, topicPath } = this.state;
-    const { controlEndButtonStatus, initializeTopicPath, blockEndButtonStatus, unblockEndButtonStatus,
-      controlNextButtonStatus, controlEndStatus, controlStartStatus, setStateRequirment, topicConvey } = this;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id } = this.state;
+    const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
+      controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice } = this;
     
     return (
       <div class="backGround">
         <div class="leftSideBar">
           <LeftSideBar 
-            requirement={requirement}
-            initializeTopicPath={initializeTopicPath}
-            end={end}
-            start={start}
-            topicPath={topicPath}
+            u_id={u_id}
           />
         </div>
         <main class="chatGrid chatStyle">
           <ChatRoom 
             end={end}
             start={start}
-            topicConvey={topicConvey}
+            u_id={u_id}
+            deviceListConvey={deviceListConvey}
             blockEndButtonStatus={blockEndButtonStatus}
             unblockEndButtonStatus={unblockEndButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
             controlEndStatus={controlEndStatus}
             controlStartStatus={controlStartStatus}
-            setStateRequirment={setStateRequirment}
             controlNextButtonStatus={controlNextButtonStatus}
+            changeBotTurnStatus={changeBotTurnStatus}
+            targetDevice={targetDevice}
           />
         </main>
         <div class="rightSideBar">
-          <RightSideBar 
+          <RightSideBar
+            initializeDevicePath={initializeDevicePath}
+            end={end}
+            devicePath={devicePath}
             endButtonStatus={endButtonStatus}
             nextButtonStatus={nextButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
             controlNextButtonStatus={controlNextButtonStatus}
             controlEndStatus={controlEndStatus} 
             controlStartStatus={controlStartStatus}
+            botTurnStatus={botTurnStatus}
+            setTargetDevice={setTargetDevice}
           />
         </div>
       </div>

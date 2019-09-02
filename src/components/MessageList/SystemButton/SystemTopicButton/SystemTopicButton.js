@@ -19,7 +19,7 @@ export class SystemTopicButton extends Component {
 
     render() {
         const { handleCreate } = this;
-        if (this.props.topics.length > 5){
+        if (Object.keys(this.props.topics).length > 5){
             this.overflowCondition = 'scroll'
         }
 

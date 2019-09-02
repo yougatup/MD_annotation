@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Input, Label, Image, Modal, Header, Icon, } from 'semantic-ui-react'
+import { Button, Input, Label, Image, } from 'semantic-ui-react'
 import './ChatRoom.css';
 
 import user from './../MessageList/Message/images/avatar.png';
@@ -7,7 +7,6 @@ import user from './../MessageList/Message/images/avatar.png';
 import { MessageList } from "./../MessageList/MessageList.js";
 import { SystemTopicButton } from "./../MessageList/SystemButton/SystemTopicButton/SystemTopicButton.js";
 import { SystemBotButton } from "./../MessageList/SystemButton/SystemBotButton/SystemBotButton.js";
-import { SystemUserButton } from "./../MessageList/SystemButton/SystemUserButton/SystemUserButton.js";
 
 const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
@@ -16,6 +15,7 @@ export class ChatRoom extends Component {
     num_experiment = 1;
     curPath = '/topics/';
     after_require = false;
+    extension = '.json';
 
     constructor(props) {
         super(props);
@@ -37,9 +37,7 @@ export class ChatRoom extends Component {
             ],
 
             // Data lists for conversation flow
-            AnswerList: [],
-            requirementList: [],
-            otherResponseList: [],
+            deviceList: [],
 
             // Status for controlling chatflow
             inputButtonState: false,
@@ -51,7 +49,8 @@ export class ChatRoom extends Component {
         };
         
 	    this._getTopics = this._getTopics.bind(this);
-	    this._getRequirements = this._getRequirements.bind(this);
+	    this._getDeviceList = this._getDeviceList.bind(this);
+	    this._postUserResponse = this._postUserResponse.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
@@ -63,6 +62,7 @@ export class ChatRoom extends Component {
         this.similarResponse = this.similarResponse.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.handleCreate = this.handleCreate.bind(this);
+        this.handleNotapplicable = this.handleNotapplicable.bind(this);
         this.handleKeyPress = this.handleKeyPress.bind(this);
     }
     
@@ -73,7 +73,7 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        const { end, start, controlEndStatus, controlStartStatus, controlNextButtonStatus } = this.props;
+        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus } = this.props;
         if ( end === true ) {
             this.setState({
                 similarUserStatus: true,
@@ -81,7 +81,10 @@ export class ChatRoom extends Component {
                 turnNotice: false,
             })
             controlEndStatus();
-            controlNextButtonStatus();
+        }
+
+        if (prevState.selectBotStatus !== this.state.selectBotStatus){
+            changeBotTurnStatus(this.state.selectBotStatus);
         }
 
         if( start === true ) {
@@ -104,16 +107,31 @@ export class ChatRoom extends Component {
         }).then(topics => this.setState({topics: topics}));
     }
 
-    _getRequirements(path) {
+    _getDeviceList(path) {
         fetch(`${databaseURL+path}`).then(res => {
             if(res.status !== 200) {
                 throw new Error(res.statusText);
             }
             return res.json();
-        }).then(requirementList => {
+        }).then(deviceList => {
             this.setState({
-                requirementList: requirementList,
+                deviceList: deviceList,
             })
+        });
+    }
+
+    _postUserResponse(response) {
+        return fetch(`${databaseURL+this.curPath+this.extension}`, {
+            method: 'POST',
+            body: JSON.stringify(response)
+        }).then(res => {
+            if(res.status !== 200) {
+                throw new Error(res.statusText);
+            }
+            return res.json();
+        }).then(data => {
+            // Convey to Chatroom the path and response
+            this.similarResponse(response, data.name);
         });
     }
 
@@ -183,7 +201,6 @@ export class ChatRoom extends Component {
         const { blockEndButtonStatus, unblockEndButtonStatus } = this.props;
         blockEndButtonStatus();
         setTimeout(() => {
-            this.setOtherResponseList();
             this.setState(prevState => ({
                 similarUserStatus: !prevState.similarUserStatus,
             }));
@@ -196,10 +213,10 @@ export class ChatRoom extends Component {
     // Also unblock the endbutton through 'controlEndButtonStatus' function
     selectTopic = (dataFromChild, id) => {
         const { messageList, time } = this.state;
-        const { topicConvey, controlEndButtonStatus } = this.props;
+        const { deviceListConvey, controlEndButtonStatus } = this.props;
         controlEndButtonStatus();
-        topicConvey(this.curPath + id + '/requirementList.json')
-        this._getRequirements(this.curPath + id + '/requirementList.json');
+        deviceListConvey(this.curPath + id + '/deviceList.json')
+        this._getDeviceList(this.curPath + id + '/deviceList.json');
         this.setState({
             startSession: false,
             messageList: messageList.concat({
@@ -207,37 +224,10 @@ export class ChatRoom extends Component {
                 type: 'user',
                 time: time.toLocaleTimeString(),
                 text: dataFromChild.value,
-                tag: dataFromChild.tag,
             }),
         })
         this.curPath = this.curPath + id + '/children';
-	    this.setAnswerList(dataFromChild.children);
         this.updateRenderUntilSysBot();
-    }
-
-    setOtherResponseList = () => {
-        const { curState } = this.state;
-        if(curState !== null && curState !== undefined){
-            this.setState({
-                otherResponseList: curState,
-            });
-        } else {
-            this.setState({
-                otherResponseList: [],
-            })
-        }
-    }
-
-    setAnswerList = (children) => {
-        if(children !== null && children !== undefined) {
-            this.setState({
-                AnswerList: children,
-            });
-        } else {
-            this.setState({
-                AnswerList: [],
-            })
-        }
     }
 
     // Putting selected answer from the SystemBotButton
@@ -251,7 +241,6 @@ export class ChatRoom extends Component {
                     type: 'bot',
                     time: time.toLocaleDateString(),
                     text: dataFromChild.value,
-                    tag: dataFromChild.tag,
                     path: this.curPath + '/' + addedPath
                 }),
                 selectBotStatus: true,
@@ -264,7 +253,6 @@ export class ChatRoom extends Component {
                     type: 'bot',
                     time: time.toLocaleDateString(),
                     text: dataFromChild.value,
-                    tag: dataFromChild.tag,
                     path: this.curPath + '/' + addedPath
                 }),
                 selectBotStatus: true,
@@ -291,14 +279,12 @@ export class ChatRoom extends Component {
                 type: 'user',
                 time: time.toLocaleDateString(),
                 text: dataFromChild.value,
-                tag: dataFromChild.tag,
                 path: this.curPath + '/' + addedPath,
             }),
             similarUserStatus: true,
         })
 
         this.curPath = this.curPath + '/' + addedPath + '/children';
-        this.setAnswerList(dataFromChild.children);
         this.updateRenderUntilSysBot();
     }
 
@@ -326,8 +312,14 @@ export class ChatRoom extends Component {
                 text: input,
             }),
         })
+        this.handleNotapplicable(input);
         this.updateRenderUntilUserBot();
         this.scrollToBottom();
+    }
+
+    handleNotapplicable = (originResponse) => {
+        const newResponse = {value: originResponse, type: 'user', u_id: this.props.u_id, children: {}}
+        this._postUserResponse(newResponse);
     }
 
     handleKeyPress = (e) => {
@@ -337,18 +329,14 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, time, originResponse, 
-            topics, messageList, AnswerList, requirementList,
-            otherResponseList, inputButtonState, 
-            turnNotice, startSession, selectBotStatus,
-            similarUserStatus } = this.state;
+        const { input, time, topics, messageList, deviceList,
+            inputButtonState, turnNotice, startSession, selectBotStatus, } = this.state;
         const {
             handleChangeText,
             handleCreate,
             handleKeyPress,
             selectTopic,
             selectAnswer,
-            similarResponse,
         } = this;
 
         const sysNotice = [
@@ -366,17 +354,12 @@ export class ChatRoom extends Component {
                             <div>
                                 <MessageList messageList={messageList}/>
                                 {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic}/> : null}
-                                {similarUserStatus ? null : <SystemUserButton 
-                                                                similarResponse={similarResponse}
-                                                                originResponse={originResponse}
-                                                                otherResponseList={otherResponseList}
-                                                                curPath={this.curPath}
-                                                            />}
                                 {selectBotStatus ? null : <SystemBotButton 
                                                             selectAnswer={selectAnswer}
-                                                            AnswerList={AnswerList}
                                                             curPath={this.curPath}
-                                                            requirementList={requirementList}
+                                                            targetDevice={this.props.targetDevice}
+                                                            deviceList={deviceList}
+                                                            u_id={this.props.u_id}
                                                             />}
                                 {turnNotice ? <MessageList messageList={sysNotice}/> : null}
                             </div>
