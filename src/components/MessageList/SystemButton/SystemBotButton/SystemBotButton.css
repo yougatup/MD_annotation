@@ -12,4 +12,12 @@
 .systemBotText {
     font-family: 'Roboto Condensed', sans-serif;
     font-weight: bold;
+    font-size: 12px;
+}
+
+.systemBotNotice {
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight: bold;
+    font-size: 11px;
+    color: red;
 }

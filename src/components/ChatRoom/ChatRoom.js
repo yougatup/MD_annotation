@@ -33,7 +33,7 @@ export class ChatRoom extends Component {
             type: 'user',
             originResponse: '',
             messageList: [
-                { id: 0, type: 'system', time: null, text: "Let's start " + 'conversation ' + this.num_experiment},
+                { id: 0, type: 'system', time: null, text: this.num_experiment + " 번째 대화 시작"},
             ],
 
             // Data lists for conversation flow
@@ -159,8 +159,8 @@ export class ChatRoom extends Component {
     resetMessageList = () => {
         this.setState({
             messageList: [
-                { id: 0, type: 'system', time: null, text: 'End the '+ 'conversation ' + this.num_experiment},
-                { id: 1, type: 'system', time: null, text: 'Click the [Next Conversation] Button in below'}
+                { id: 0, type: 'system', time: null, text: this.num_experiment + ' 번째 대화 종료'},
+                { id: 1, type: 'system', time: null, text: '오른쪽 하단의 [다음 대화 시작] 버튼을 눌러주세요!'}
             ],
         })
         this.id = 0
@@ -174,7 +174,7 @@ export class ChatRoom extends Component {
         this.id = 0
         this.setState({
             messageList: [
-                { id: 0, type: 'system', time: null, text: 'Lets start ' + 'conversation ' + + this.num_experiment}
+                { id: 0, type: 'system', time: null, text: this.num_experiment + " 번째 대화 시작"}
             ],
             startSession: true,
             curState: {},
@@ -231,34 +231,21 @@ export class ChatRoom extends Component {
     }
 
     // Putting selected answer from the SystemBotButton
-    selectAnswer = (dataFromChild, addedPath, newAnswerState) => {
+    selectAnswer = (dataFromChild, addedPath) => {
         const { messageList, time, } = this.state;
 
-        if(newAnswerState === true) {
-            this.setState({
-                messageList: messageList.concat({
-                    id: this.id++,
-                    type: 'bot',
-                    time: time.toLocaleDateString(),
-                    text: dataFromChild.value,
-                    path: this.curPath + '/' + addedPath
-                }),
-                selectBotStatus: true,
-                curState: null,
-            })
-        } else{
-            this.setState({
-                messageList: messageList.concat({
-                    id: this.id++,
-                    type: 'bot',
-                    time: time.toLocaleDateString(),
-                    text: dataFromChild.value,
-                    path: this.curPath + '/' + addedPath
-                }),
-                selectBotStatus: true,
-                curState: dataFromChild.children,
-            })
-        }
+        this.setState({
+            messageList: messageList.concat({
+                id: this.id++,
+                type: 'bot',
+                time: time.toLocaleDateString(),
+                text: dataFromChild.value,
+                actionList: dataFromChild.actionList,
+                path: this.curPath + '/' + addedPath,
+            }),
+            selectBotStatus: true,
+            curState: null,
+        })
 
         this.curPath = this.curPath + '/' + addedPath + '/children';
         this.changeTurnNotice();
@@ -340,7 +327,7 @@ export class ChatRoom extends Component {
         } = this;
 
         const sysNotice = [
-            { id: 0, type: 'system', time: null, text: "Now, it's User turn!\n\nPlease enter your response as a user in the input field at the bottom of the page."},
+            { id: 0, type: 'system', time: null, text: "사용자의 순서입니다.\n\n 원하는 발화를 하단에 입력해주세요."},
             { id: 2, type: 'loading', time: null, text: "  "},
         ];
 

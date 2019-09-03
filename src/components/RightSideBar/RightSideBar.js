@@ -113,17 +113,17 @@ export class RightSideBar extends Component {
                     <div class="textLeftAlign">
                         { deviceList.length === 0
                             ?   null
-                            :   <Label color={'violet'} size={'big'}>Available Devices</Label>
+                            :   <Label color={'violet'} size={'big'}>사용 가능한 장치 목록</Label>
                         }
                         <div style={{height: '25px'}}></div>
                         {
                             deviceList.map(
                                 (device, id) => (
                                     <div key={id}>
-                                        <span style={{fontSize: '15px', color: '#E8EAF6', fontWeight: 'bold', paddingLeft: '9px', marginRight: '15px'}}>{'  -  '+device.name}</span>
+                                        <span style={{fontSize: '13px', color: '#E8EAF6', fontWeight: 'bold', paddingLeft: '9px', marginRight: '15px'}}>{'  -  '+device.name}</span>
                                         { botTurnStatus
                                             ?   null
-                                            :   <button class="ui mini button" onClick={sendTargetDevice.bind(this, device)}>Add</button>
+                                            :   <button class="ui mini button" onClick={sendTargetDevice.bind(this, device)}><span style={{fontSize: '11px'}}>장치 추가</span></button>
                                         }
                                         <div style={{height: '10px'}}></div>
                                     </div>
@@ -144,24 +144,24 @@ export class RightSideBar extends Component {
                         { endButtonStatus
                             ?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
                                     <Icon name='pause' />
-                                    End Conversation
+                                    이번 대화 종료
                                 </Button>
                             :   <Button disabled fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
                                     <Icon name='pause' />
-                                    End Conversation
+                                    이번 대화 종료
                                 </Button>
                         }
                         <div style={{height: '20px'}}></div>
                         { nextButtonStatus
                             ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 5) ? this.endExperiment() : this.sendStartStatus()}}>
                                     { (num_experiment === 5) 
-                                        ? 'End'
-                                        : 'Next Conversation'
+                                        ? '실험 종료'
+                                        : '다음 대화 시작'
                                     }
                                     <Icon name='right arrow' />
                                 </Button>
                             :   <Button disabled fluid icon labelPosition='right' onClick={() => this.sendStartStatus()}>
-                                    Next Conversation
+                                    다음 대화 시작
                                     <Icon name='right arrow' />
                                 </Button>
                         }

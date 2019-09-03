@@ -5,8 +5,6 @@ export class MessageList extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-        };
     }
 
     render() {
@@ -14,12 +12,13 @@ export class MessageList extends Component {
         
         // render whole messages during conversation
         const messages = messageList.map(
-            ({id, type, time, text}) => (
+            ({id, type, time, text, actionList}) => (
                 <Message
                     id={id}
                     type={type}
                     time={time}
                     text={text}
+                    actionList={actionList}
                 />
             )
         );

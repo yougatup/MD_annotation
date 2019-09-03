@@ -44,14 +44,14 @@ export class SystemBotButton extends Component {
             return res.json();
         }).then(data => {
             // Convey to Chatroom the path and answer
-            this.sendAnswer(answer, this.addedpath + data.name, true);
+            this.sendAnswer(answer, this.addedpath + data.name);
         });
     }
 
     // Send the answer which the user is selected to parent component
-    sendAnswer = (answer, id, state) => {
+    sendAnswer = (answer, id) => {
         const { selectAnswer } = this.props;
-        selectAnswer(answer, id, state);
+        selectAnswer(answer, id);
     }
 
     handleChangeText = (e) => {
@@ -120,15 +120,17 @@ export class SystemBotButton extends Component {
 
         return (
             <div class="systemBotButtonBox">
-                <span class="systemBotText">Add new response and actions</span>
+                <span class="systemBotText">에이전트의 발화와, 작동되길 원하는 장치들의 액션을 입력하세요.</span>
+                <br></br>
+                <span class="systemBotNotice">오른쪽에서 사용 가능한 장치를 추가할 수 있습니다.</span>
                 <div style={{width: '100%', marginTop:"10px" ,maxHeight: '250px'}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
-                            <Input fluid type='text' placeholder="Type bot's response..." action>
+                            <Input fluid type='text' placeholder="type the Agent's response..." action>
                                 <Label>
                                     <Image avatar spaced='right' src={bot} />
-                                    Bot Response
-                                </Label>    
+                                    에이전트 발화
+                                </Label>
                                 <input value={response} onChange={handleChangeText}/>
                             </Input>
                             {usedDeviceList.map((device, id) => {
@@ -136,9 +138,9 @@ export class SystemBotButton extends Component {
                                     <div className="action" key={id}>
                                         <div style={{height: '10px'}}></div>
                                         <div class="ui fluid labeled input">
-                                            <div class="ui label label">{device.name}</div>
-                                            <input value={actionList.name} placeholder="type device's action" onChange={(e) => handleChangeAction(device.name, id, e)}/>
-                                            <Button negative type='cancle' onClick={(e) => removeUsedDevice(device.name, id)}>Cancel</Button>
+                                            <div class="ui label label" style={{fontSize: '13px'}}>{device.name}</div>
+                                            <input value={actionList.name} placeholder="type the device's action" onChange={(e) => handleChangeAction(device.name, id, e)}/>
+                                            <Button color={'google plus'} type='cancle' onClick={(e) => removeUsedDevice(device.name, id)}><span style={{fontSize:'11px'}}>삭제</span></Button>
                                         </div>
                                     </div>
                                     )
@@ -146,28 +148,11 @@ export class SystemBotButton extends Component {
                             }
                             <div style={{height: '15px'}}></div>
                             { response !== ''
-                                ?   <Button fluid positive type='submit' onClick={handleCreate}>Add new response</Button>
-                                :   <Button disabled fluid positive type='submit' onClick={handleCreate}>Add new response</Button>
+                                ?   <Button fluid positive type='submit' onClick={handleCreate}>새로운 발화 추가</Button>
+                                :   <Button disabled fluid positive type='submit' onClick={handleCreate}>새로운 발화 추가</Button>
                             }
                         </Segment>
                     </Segment.Group>
-                    {/* <Segment.Group>
-                            <Segment textAlign='center' color='teal'>
-                                <div class="systemBotText">Available Devices</div>
-                                {deviceList.map((device, id) => {
-                                    return(
-                                        <div key={id}>
-                                            <div style={{height: '10px'}}></div>
-                                            { device.selected
-                                                ?   <Button disabled fluid color='teal'>{device.name}</Button>
-                                                :   <Button fluid color='teal' onClick={changeDeviceStatus.bind(this, device)}>{device.name}</Button>
-                                            }
-                                        </div>
-                                        )
-                                    })
-                                }
-                            </Segment>
-                    </Segment.Group> */}
                 </div>
             </div>
         );
