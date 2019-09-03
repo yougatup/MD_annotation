@@ -65,14 +65,9 @@ export class RightSideBar extends Component {
     // Convey the startstatus to parent component when each conversation starts
     sendStartStatus = () => {
         const { controlStartStatus, controlNextButtonStatus } = this.props;
-        const { num_experiment, colors } = this.state;
+        const { num_experiment } = this.state;
         this.setState({
             num_experiment: num_experiment + 1,
-            colors: [
-                ...colors.slice(0, num_experiment),
-                'violet',
-                ...colors.slice(num_experiment + 1)
-            ]
         })
 
         //change the status

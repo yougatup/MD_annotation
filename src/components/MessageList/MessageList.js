@@ -3,10 +3,6 @@ import { Message } from "./Message/Message.js";
 
 export class MessageList extends Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const { messageList } = this.props;
         

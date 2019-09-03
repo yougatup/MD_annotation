@@ -22,9 +22,10 @@ export class SystemBotButton extends Component {
         this._postBotResponse = this._postBotResponse.bind(this);
         this.sendAnswer = this.sendAnswer.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
-        this.handleCreate = this.handleCreate.bind(this);
         this.changeDeviceStatus = this.changeDeviceStatus.bind(this);
         this.removeUsedDevice = this.removeUsedDevice.bind(this);
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -72,24 +73,6 @@ export class SystemBotButton extends Component {
         })
     }
 
-    // Add New answer of Bot, state: true
-    handleCreate = () => {
-        const { response, actionList } = this.state;
-
-        const newAnswer = {
-            value: response, 
-            type: 'bot', 
-            u_id: this.props.u_id, 
-            actionList: actionList.filter((action) => action.action !== ''), 
-        }
-        this.setState({
-            response: '',
-        })
-
-        // Adding new answer(Bot)
-        this._postBotResponse(newAnswer);
-    }
-
     changeDeviceStatus = (device) => {
         const { usedDeviceList, actionList, deviceList } = this.state;
         const newDeviceList = deviceList.map((d) => {
@@ -120,9 +103,32 @@ export class SystemBotButton extends Component {
         })
     }
 
+    handleCreate = () => {
+        const { response, actionList } = this.state;
+
+        const newAnswer = {
+            value: response, 
+            type: 'bot', 
+            u_id: this.props.u_id, 
+            actionList: actionList.filter((action) => action.action !== ''), 
+        }
+        this.setState({
+            response: '',
+        })
+
+        // Adding new answer(Bot)
+        this._postBotResponse(newAnswer);
+    }
+
+    handleKeyPress = (e) => {
+        if(e.key === 'Enter') {
+            this.handleCreate();
+        }
+    }
+
     render() {
         const { response, usedDeviceList, actionList } = this.state;
-        const { handleChangeText, handleCreate, handleChangeAction, removeUsedDevice } = this;
+        const { handleChangeText, handleCreate, handleChangeAction, removeUsedDevice, handleKeyPress } = this;
 
         return (
             <div class="systemBotButtonBox">
@@ -137,7 +143,7 @@ export class SystemBotButton extends Component {
                                     <Image avatar spaced='right' src={bot} />
                                     에이전트 발화
                                 </Label>
-                                <input value={response} onChange={handleChangeText}/>
+                                <input value={response} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
                             </Input>
                             {usedDeviceList.map((device, id) => {
                                 return(
@@ -145,7 +151,7 @@ export class SystemBotButton extends Component {
                                         <div style={{height: '10px'}}></div>
                                         <div class="ui fluid labeled input">
                                             <div class="ui label label" style={{fontSize: '13px'}}>{device.name}</div>
-                                            <input value={actionList.name} placeholder="type the device's action" onChange={(e) => handleChangeAction(device.name, id, e)}/>
+                                            <input value={actionList.name} placeholder="type the device's action" onKeyPress={handleKeyPress} onChange={(e) => handleChangeAction(device.name, id, e)}/>
                                             <Button color={'google plus'} type='cancle' onClick={(e) => removeUsedDevice(device.name, id)}><span style={{fontSize:'11px'}}>삭제</span></Button>
                                         </div>
                                     </div>

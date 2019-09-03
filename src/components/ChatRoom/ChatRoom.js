@@ -75,6 +75,7 @@ export class ChatRoom extends Component {
     componentDidUpdate(prevProps, prevState) {
         const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus } = this.props;
         if ( end === true ) {
+            this.resetMessageList();
             this.setState({
                 similarUserStatus: true,
                 selectBotStatus: true,
