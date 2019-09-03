@@ -36,9 +36,6 @@ export class ChatRoom extends Component {
                 { id: 0, type: 'system', time: null, text: this.num_experiment + " 번째 대화 시작"},
             ],
 
-            // Data lists for conversation flow
-            deviceList: [],
-
             // Status for controlling chatflow
             inputButtonState: false,
             startSession: true,
@@ -49,7 +46,6 @@ export class ChatRoom extends Component {
         };
         
 	    this._getTopics = this._getTopics.bind(this);
-	    this._getDeviceList = this._getDeviceList.bind(this);
 	    this._postUserResponse = this._postUserResponse.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
@@ -106,19 +102,6 @@ export class ChatRoom extends Component {
             }
             return res.json();
         }).then(topics => this.setState({topics: topics}));
-    }
-
-    _getDeviceList(path) {
-        fetch(`${databaseURL+path}`).then(res => {
-            if(res.status !== 200) {
-                throw new Error(res.statusText);
-            }
-            return res.json();
-        }).then(deviceList => {
-            this.setState({
-                deviceList: deviceList,
-            })
-        });
     }
 
     _postUserResponse(response) {
@@ -217,7 +200,6 @@ export class ChatRoom extends Component {
         const { deviceListConvey, controlEndButtonStatus } = this.props;
         controlEndButtonStatus();
         deviceListConvey(this.curPath + id + '/deviceList.json')
-        this._getDeviceList(this.curPath + id + '/deviceList.json');
         this.setState({
             startSession: false,
             messageList: messageList.concat({
@@ -317,8 +299,7 @@ export class ChatRoom extends Component {
     }
 
     render() {
-        const { input, time, topics, messageList, deviceList,
-            inputButtonState, turnNotice, startSession, selectBotStatus, } = this.state;
+        const { input, time, topics, messageList, inputButtonState, turnNotice, startSession, selectBotStatus, } = this.state;
         const {
             handleChangeText,
             handleCreate,
@@ -346,7 +327,7 @@ export class ChatRoom extends Component {
                                                             selectAnswer={selectAnswer}
                                                             curPath={this.curPath}
                                                             targetDevice={this.props.targetDevice}
-                                                            deviceList={deviceList}
+                                                            click_state={this.props.click_state}
                                                             u_id={this.props.u_id}
                                                             />}
                                 {turnNotice ? <MessageList messageList={sysNotice}/> : null}
@@ -366,7 +347,7 @@ export class ChatRoom extends Component {
                                         </Input>
                                     :   <Input fluid disabled type='text' placeholder='Type...' action>
                                             <input value={input} onChange={handleChangeText} onKeyPress={handleKeyPress}/>
-                                            <Button type='submit' onClick={handleCreate}>Send</Button>
+                                            <Button disabled type='submit' onClick={handleCreate}>Send</Button>
                                         </Input>
                                 }
                             </div>

@@ -5,6 +5,8 @@ import './RightSideBar.css';
 const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
 export class RightSideBar extends Component {
+    click_state = 0;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -26,6 +28,7 @@ export class RightSideBar extends Component {
                 });
                 this.props.initializeDevicePath()
             }
+            this.click_state = 0
         }
         if (prevProps.devicePath !== this.props.devicePath){
             this._getDeviceList();
@@ -46,7 +49,8 @@ export class RightSideBar extends Component {
     }
 
     sendTargetDevice = (target) =>{
-        this.props.setTargetDevice(target)
+        this.props.setTargetDevice(target, this.click_state)
+        this.click_state += 1
     }
 
     // Convey the endstatus to parent component when each conversation is ended

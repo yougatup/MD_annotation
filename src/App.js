@@ -22,6 +22,7 @@ class App extends Component{
       devicePath: '',
       botTurnStatus: false,
       targetDevice: '',
+      click_state: 0,
 
       // Control each button's disabled status
       endButtonStatus: false,
@@ -71,9 +72,10 @@ class App extends Component{
     })
   }
 
-  setTargetDevice = (target) => {
+  setTargetDevice = (target, state) => {
     this.setState({
       targetDevice: target,
+      click_state: state,
     })
   }
 
@@ -120,7 +122,7 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state } = this.state;
     const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
       controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice } = this;
     
@@ -145,6 +147,7 @@ class App extends Component{
             controlNextButtonStatus={controlNextButtonStatus}
             changeBotTurnStatus={changeBotTurnStatus}
             targetDevice={targetDevice}
+            click_state={click_state}
           />
         </main>
         <div class="rightSideBar">

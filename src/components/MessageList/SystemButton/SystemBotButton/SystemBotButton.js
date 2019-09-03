@@ -10,13 +10,13 @@ export class SystemBotButton extends Component {
     extension = '.json';
     addedpath = '';
     actionpath = '/actions'
+    action_order = 0;
 
     constructor(props) {
         super(props);
         this.state = { 
             response: '',
             actionList: [],
-            deviceList: this.props.deviceList,
             usedDeviceList: [],
         };
         this._postBotResponse = this._postBotResponse.bind(this);
@@ -29,7 +29,7 @@ export class SystemBotButton extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.targetDevice !== this.props.targetDevice){
+        if (prevProps.click_state !== this.props.click_state){
             this.changeDeviceStatus(this.props.targetDevice);
         }
     }
@@ -74,15 +74,10 @@ export class SystemBotButton extends Component {
     }
 
     changeDeviceStatus = (device) => {
-        const { usedDeviceList, actionList, deviceList } = this.state;
-        const newDeviceList = deviceList.map((d) => {
-            if (d.name !== device.name) return d;
-            return {...d, name: d.name, selected: true}
-        })
+        const { usedDeviceList, actionList } = this.state;
         this.setState({
-            deviceList: newDeviceList,
             usedDeviceList: usedDeviceList.concat({
-                name: device.name
+                name: device.name,
             }),
             actionList: actionList.concat({
                 action: ''
@@ -91,15 +86,10 @@ export class SystemBotButton extends Component {
     }
 
     removeUsedDevice = (name, id) => {
-        const { usedDeviceList, actionList, deviceList } = this.state;
-        const newDeviceList = deviceList.map((d) => {
-            if (d.name !== name) return d;
-            return {...d, name: d.name, selected: false}
-        })
+        const { usedDeviceList, actionList } = this.state;
         this.setState({
-            deviceList: newDeviceList,
             actionList: actionList.filter((action, a_ids) => id !== a_ids),
-            usedDeviceList: usedDeviceList.filter((device, d_idx) => device.name !== name),
+            usedDeviceList: usedDeviceList.filter((device, d_idx) => id !== d_idx),
         })
     }
 
@@ -135,7 +125,7 @@ export class SystemBotButton extends Component {
                 <span class="systemBotText">에이전트의 발화와, 작동되길 원하는 장치들의 액션을 입력하세요.</span>
                 <br></br>
                 <span class="systemBotNotice">오른쪽에서 사용 가능한 장치를 추가할 수 있습니다.</span>
-                <div style={{width: '100%', marginTop:"10px" ,maxHeight: '250px'}}>
+                <div style={{width: '100%', marginTop:"10px"}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
                             <Input fluid type='text' placeholder="type the Agent's response..." action>
