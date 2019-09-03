@@ -20,32 +20,35 @@ export class Message extends Component {
                                     </div>);
                         if (type === 'bot')
                             return  (
-                                <div>
+                                <div style={{marginBottom: '25px'}}>
                                     <div class="messageSection messageSectionBot">
                                         <img src={bot} alt="Bot"/>
                                         <span class="messageSectionBody">{text}</span>
                                         <span class="messageSectionTime">{time}</span>
                                     </div>
-                                    <Table compact size='small' color={'black'}>
-                                        <Table.Header>
-                                        <Table.Row>
-                                            <Table.HeaderCell>Device</Table.HeaderCell>
-                                            <Table.HeaderCell>Action</Table.HeaderCell>
-                                        </Table.Row>
-                                        </Table.Header>
-                                        <Table.Body>
-                                        {
-                                            actionList.map(action => {
-                                                return (
-                                                    <Table.Row>
-                                                        <Table.Cell>{action.device}</Table.Cell>
-                                                        <Table.Cell>{action.action}</Table.Cell>
-                                                    </Table.Row>
-                                                )
-                                            })
-                                        }
-                                        </Table.Body>
-                                    </Table>
+                                    { Object.keys(actionList).length === 0
+                                        ? null
+                                        :   <Table compact size='small' color={'black'}>
+                                                <Table.Header>
+                                                <Table.Row>
+                                                    <Table.HeaderCell>Device</Table.HeaderCell>
+                                                    <Table.HeaderCell>Action</Table.HeaderCell>
+                                                </Table.Row>
+                                                </Table.Header>
+                                                <Table.Body>
+                                                {
+                                                    actionList.map(action => {
+                                                        return (
+                                                            <Table.Row>
+                                                                <Table.Cell>{action.device}</Table.Cell>
+                                                                <Table.Cell>{action.action}</Table.Cell>
+                                                            </Table.Row>
+                                                        )
+                                                    })
+                                                }
+                                                </Table.Body>
+                                            </Table>
+                                    }
                                 </div>
                                 );
                         if (type === 'user')

@@ -75,7 +75,13 @@ export class SystemBotButton extends Component {
     // Add New answer of Bot, state: true
     handleCreate = () => {
         const { response, actionList } = this.state;
-        const newAnswer = {value: response, type: 'bot', u_id: this.props.u_id, actionList: actionList, children: {}}
+
+        const newAnswer = {
+            value: response, 
+            type: 'bot', 
+            u_id: this.props.u_id, 
+            actionList: actionList.filter((action) => action.action !== ''), 
+        }
         this.setState({
             response: '',
         })

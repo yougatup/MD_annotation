@@ -9,14 +9,6 @@ export class RightSideBar extends Component {
         super(props);
         this.state = {
             num_experiment: 1,
-            colors: [
-                'violet',
-                'grey',
-                'grey',
-                'grey',
-                'grey',
-            ],
-
             deviceList: [],
         };
         this._getDeviceList = this._getDeviceList.bind(this);
@@ -100,7 +92,7 @@ export class RightSideBar extends Component {
     }
 
     render() {
-        const { num_experiment, colors, deviceList } = this.state;
+        const { num_experiment, deviceList } = this.state;
         const { sendTargetDevice } = this;
 
 
@@ -135,12 +127,6 @@ export class RightSideBar extends Component {
                 <div class="rightInfoBox">
                     <div class="textCenter">
                         <div style={{ marginBottom: '15px', fontSize: '23px' }}> {num_experiment} / 5 </div>
-                        {/* <div>
-                            {colors.map(color => (
-                            <Label circular color={color}>
-                            </Label>
-                            ))}
-                        </div> */}
                         { endButtonStatus
                             ?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
                                     <Icon name='pause' />
