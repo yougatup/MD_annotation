@@ -104,7 +104,7 @@ export class RightSideBar extends Component {
                     <div class="textLeftAlign">
                         { deviceList.length === 0
                             ?   null
-                            :   <Label color={'violet'} size={'big'}>사용 가능한 장치 목록</Label>
+                            :   <Label color={'violet'} size={'large'}>사용 가능한 장치 목록</Label>
                         }
                         <div style={{height: '25px'}}></div>
                         {
@@ -125,7 +125,7 @@ export class RightSideBar extends Component {
                 </div>
                 <div class="rightInfoBox">
                     <div class="textCenter">
-                        <div style={{ marginBottom: '15px', fontSize: '23px' }}> {num_experiment} / 5 </div>
+                        <div style={{ marginBottom: '15px', fontSize: '21px' }}> {num_experiment} / 2 </div>
                         { endButtonStatus
                             ?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
                                     <Icon name='pause' />
@@ -138,8 +138,8 @@ export class RightSideBar extends Component {
                         }
                         <div style={{height: '20px'}}></div>
                         { nextButtonStatus
-                            ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 5) ? this.endExperiment() : this.sendStartStatus()}}>
-                                    { (num_experiment === 5) 
+                            ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 2) ? this.endExperiment() : this.sendStartStatus()}}>
+                                    { (num_experiment === 2) 
                                         ? '실험 종료'
                                         : '다음 대화 시작'
                                     }

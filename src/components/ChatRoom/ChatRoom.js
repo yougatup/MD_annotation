@@ -141,11 +141,22 @@ export class ChatRoom extends Component {
 
     // Reset the messageList when the conversation is ended
     resetMessageList = () => {
-        this.setState({
-            messageList: [
+        let endMessage = []
+
+        if (this.num_experiment === 2){
+            endMessage = [
+                { id: 0, type: 'system', time: null, text: '실험이 종료되었습니다.'},
+                { id: 1, type: 'system', time: null, text: '참여해주셔서 감사합니다!'}
+            ]
+        } else {
+            endMessage = [
                 { id: 0, type: 'system', time: null, text: this.num_experiment + ' 번째 대화 종료'},
                 { id: 1, type: 'system', time: null, text: '오른쪽 하단의 [다음 대화 시작] 버튼을 눌러주세요!'}
-            ],
+            ]
+        }
+        
+        this.setState({
+            messageList: endMessage,
         })
         this.id = 0
     }
