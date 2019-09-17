@@ -11,7 +11,9 @@ export class SystemTopicButton extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            num_experiment : this.props.num_experiment,
         };
+        console.log(this.props.num_experiment);
         this.handleCreate = this.handleCreate.bind(this);
     }
 
@@ -29,12 +31,12 @@ export class SystemTopicButton extends Component {
 
         return (
             <div class="systemTopicButtonBox">
-                <span class="systemTopicText">원하는 주제를 선택하세요</span>
+                <span class="systemTopicText">{`${(this.state.num_experiment-1)%3+1} 번째 주제입니다`}</span>
                 <div style={{height:'15px'}}></div>
                 <div style={{width: '100%', maxHeight: '200px', overflowY: this.overflowCondition}}>
                     <Segment.Group>
                         <Segment textAlign='center'>
-                            {Object.keys(this.props.topics).map(id => {
+                            {Object.keys(this.props.topics).filter(id=>id==(this.state.num_experiment-1)%3).map(id => {
                                 const topic = this.props.topics[id];
                                 console.log(topic.value, this.selected)
                                 return this.selected === topic.value ?
@@ -43,8 +45,8 @@ export class SystemTopicButton extends Component {
                                         { id === '0'
                                             ?   null
                                             :   <div style={{height: '10px'}}></div>
-                                        } 
-                                        <Button fluid onClick={handleCreate.bind(this, topic, id)}>{topic.value}</Button>
+                                        }
+                                        <Button fluid onClick={handleCreate.bind(this, topic, id)} >{topic.value}</Button>
                                         </div>
                             })}
                         </Segment>

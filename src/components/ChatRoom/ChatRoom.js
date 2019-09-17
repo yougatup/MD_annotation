@@ -143,7 +143,7 @@ export class ChatRoom extends Component {
     resetMessageList = () => {
         let endMessage = []
 
-        if (this.num_experiment === 2){
+        if (this.num_experiment === 6){
             endMessage = [
                 { id: 0, type: 'system', time: null, text: '실험이 종료되었습니다.'},
                 { id: 1, type: 'system', time: null, text: '참여해주셔서 감사합니다!'}
@@ -333,7 +333,7 @@ export class ChatRoom extends Component {
                             </div>
                             <div>
                                 <MessageList messageList={messageList}/>
-                                {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic}/> : null}
+                                {startSession ? <SystemTopicButton topics={topics} selectTopic={selectTopic} num_experiment={this.num_experiment}/> : null}
                                 {selectBotStatus ? null : <SystemBotButton 
                                                             selectAnswer={selectAnswer}
                                                             curPath={this.curPath}

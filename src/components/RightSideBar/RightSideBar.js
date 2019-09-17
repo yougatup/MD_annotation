@@ -125,7 +125,7 @@ export class RightSideBar extends Component {
                 </div>
                 <div class="rightInfoBox">
                     <div class="textCenter">
-                        <div style={{ marginBottom: '15px', fontSize: '21px' }}> {num_experiment} / 2 </div>
+                        <div style={{ marginBottom: '15px', fontSize: '21px' }}> {num_experiment} / 6 </div>
                         { endButtonStatus
                             ?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
                                     <Icon name='pause' />
@@ -138,9 +138,9 @@ export class RightSideBar extends Component {
                         }
                         <div style={{height: '20px'}}></div>
                         { nextButtonStatus
-                            ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 2) ? this.endExperiment() : this.sendStartStatus()}}>
-                                    { (num_experiment === 2) 
-                                        ? '실험 종료'
+                            ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 6) ? this.endExperiment() : this.sendStartStatus()}}>
+                                    { (num_experiment === 6) 
+                                        ? '실험이 종료되었습니다!'
                                         : '다음 대화 시작'
                                     }
                                     <Icon name='right arrow' />
