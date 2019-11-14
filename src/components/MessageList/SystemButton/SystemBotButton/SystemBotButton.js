@@ -19,7 +19,7 @@ export class SystemBotButton extends Component {
             actionList: [],
             usedDeviceList: [],
         };
-        this._postBotResponse = this._postBotResponse.bind(this);
+        // this._postBotResponse = this._postBotResponse.bind(this);
         this.sendAnswer = this.sendAnswer.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.changeDeviceStatus = this.changeDeviceStatus.bind(this);
@@ -33,7 +33,7 @@ export class SystemBotButton extends Component {
             this.changeDeviceStatus(this.props.targetDevice);
         }
     }
-
+/*
     _postBotResponse(answer) {
         return fetch(`${databaseURL+this.props.curPath+this.extension}`, {
             method: 'POST',
@@ -47,7 +47,7 @@ export class SystemBotButton extends Component {
             // Convey to Chatroom the path and answer
             this.sendAnswer(answer, this.addedpath + data.name);
         });
-    }
+    }*/
 
     // Send the answer which the user is selected to parent component
     sendAnswer = (answer, id) => {
@@ -107,7 +107,7 @@ export class SystemBotButton extends Component {
         })
 
         // Adding new answer(Bot)
-        this._postBotResponse(newAnswer);
+        // this._postBotResponse(newAnswer);
     }
 
     handleKeyPress = (e) => {

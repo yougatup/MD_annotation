@@ -17,6 +17,9 @@ export class ChatRoom extends Component {
     after_require = false;
     extension = '.json';
 
+    conversationKeys = [];
+    curConversationIndex = -1;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -45,8 +48,10 @@ export class ChatRoom extends Component {
             depth: 0,
         };
         
+	this.getConversation = this.getConversation.bind(this);
+
 	    this._getTopics = this._getTopics.bind(this);
-	    this._postUserResponse = this._postUserResponse.bind(this);
+	    // this._postUserResponse = this._postUserResponse.bind(this);
         this.scrollToBottom = this.scrollToBottom.bind(this);
         this.changeTurnNotice = this.changeTurnNotice.bind(this);
         this.resetMessageList = this.resetMessageList.bind(this);
@@ -69,7 +74,9 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus } = this.props;
+        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus, prevConversationStatus, controlPrevConversationStatus, nextConversationStatus, controlNextConversationStatus } = this.props;
+	const { topics } = this.state;
+
         if ( end === true ) {
             this.resetMessageList();
             this.setState({
@@ -79,6 +86,30 @@ export class ChatRoom extends Component {
             })
             controlEndStatus();
         }
+
+	if(prevConversationStatus) {
+	    this.curConversation--;
+
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+
+	    this.setState({
+		messageList: msgList
+	    })
+
+	    controlPrevConversationStatus();
+	}
+
+	if(nextConversationStatus) {
+	    this.curConversation++;
+
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+
+	    this.setState({
+		messageList: msgList
+	    })
+
+	    controlNextConversationStatus();
+	}
 
         if (prevState.selectBotStatus !== this.state.selectBotStatus){
             changeBotTurnStatus(this.state.selectBotStatus);
@@ -95,15 +126,69 @@ export class ChatRoom extends Component {
     //-----------------------
     // function for tree data import
     // ----------------------
+    getConversation = (root, key) => {
+	var msgList = [];
+
+	msgList.push ( 
+		{ id: 0, type: 'user', time: '', text: root.value}
+		);
+
+	var conversation = root.children[key];
+
+	var speakerFlag = false;
+	var id_cnt = 1;
+
+	while(true) {
+	    if(conversation.children == null) break;
+
+	    if(!speakerFlag) {
+		var acList = conversation.actionList == null ? [] : conversation.actionList;
+
+		msgList.push ( 
+			{ id: id_cnt, type: 'bot', actionList: acList, time: '', text: conversation.value }
+			);
+	    }
+	    else {
+		msgList.push ( 
+			{ id: id_cnt, type: 'user', time: '', text: conversation.value }
+			);
+	    }
+
+	    conversation = conversation.children[Object.keys(conversation.children)[0]];
+
+	    id_cnt++;
+	    speakerFlag = !speakerFlag;
+	}
+
+	return msgList;
+    }
+
     _getTopics() {
+	const { messageList, time, } = this.state;
+
         fetch(`${databaseURL}/topics.json`).then(res => {
             if(res.status !== 200) {
                 throw new Error(res.statusText);
             }
             return res.json();
-        }).then(topics => this.setState({topics: topics}));
-    }
+        }).then(topics => {
+	    console.log(topics);
 
+	    var root = topics[0];
+
+	    this.conversationKeys = Object.keys(root.children);
+	    this.curConversation = 0;
+
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+
+	    this.setState({
+		topics: topics,
+		startSession: false,
+		messageList: msgList
+	    })
+	});
+    }
+/*
     _postUserResponse(response) {
         return fetch(`${databaseURL+this.curPath+this.extension}`, {
             method: 'POST',
@@ -118,12 +203,13 @@ export class ChatRoom extends Component {
             this.similarResponse(response, data.name);
         });
     }
+    */
 
     /* C. Controlling Functions */
 
     // Auto scrolling to bottom
     scrollToBottom = () => {
-        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+//        this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     }
 
     // Notice the turn of user to user
@@ -166,7 +252,10 @@ export class ChatRoom extends Component {
         this.num_experiment ++;
         this._getTopics();
         this.curPath = '/topics/';
-        this.id = 0
+        this.id = 0;
+
+	// msgList = [];
+
         this.setState({
             messageList: [
                 { id: 0, type: 'system', time: null, text: this.num_experiment + " 번째 대화 시작"}
@@ -300,7 +389,7 @@ export class ChatRoom extends Component {
 
     handleNotapplicable = (originResponse) => {
         const newResponse = {value: originResponse, type: 'user', u_id: this.props.u_id, children: {}}
-        this._postUserResponse(newResponse);
+        // this._postUserResponse(newResponse);
     }
 
     handleKeyPress = (e) => {
@@ -317,6 +406,7 @@ export class ChatRoom extends Component {
             handleKeyPress,
             selectTopic,
             selectAnswer,
+	    _getTopics,
         } = this;
 
         const sysNotice = [

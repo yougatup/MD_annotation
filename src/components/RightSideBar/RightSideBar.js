@@ -18,6 +18,9 @@ export class RightSideBar extends Component {
         this.sendEndStatus = this.sendEndStatus.bind(this);
         this.sendStartStatus = this.sendStartStatus.bind(this);
         this.endExperiment = this.endExperiment.bind(this);
+
+        this.getPreviousConversation = this.getPreviousConversation.bind(this);
+        this.getNextConversation= this.getNextConversation.bind(this);
     }
 
     componentDidUpdate(prevProps) {
@@ -51,6 +54,18 @@ export class RightSideBar extends Component {
     sendTargetDevice = (target) =>{
         this.props.setTargetDevice(target, this.click_state)
         this.click_state += 1
+    }
+
+    getPreviousConversation = () => {
+        const { controlPrevConversationStatus } = this.props;
+
+	controlPrevConversationStatus();
+    }
+
+    getNextConversation = () => {
+        const { controlNextConversationStatus } = this.props;
+
+	controlNextConversationStatus();
     }
 
     // Convey the endstatus to parent component when each conversation is ended
@@ -125,31 +140,48 @@ export class RightSideBar extends Component {
                 </div>
                 <div class="rightInfoBox">
                     <div class="textCenter">
-                        <div style={{ marginBottom: '15px', fontSize: '21px' }}> {num_experiment} / 6 </div>
-                        { endButtonStatus
-                            ?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
-                                    <Icon name='pause' />
-                                    이번 대화 종료
-                                </Button>
-                            :   <Button disabled fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
-                                    <Icon name='pause' />
-                                    이번 대화 종료
-                                </Button>
-                        }
-                        <div style={{height: '20px'}}></div>
-                        { nextButtonStatus
-                            ?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 6) ? this.endExperiment() : this.sendStartStatus()}}>
-                                    { (num_experiment === 6) 
-                                        ? '실험이 종료되었습니다!'
-                                        : '다음 대화 시작'
-                                    }
-                                    <Icon name='right arrow' />
-                                </Button>
-                            :   <Button disabled fluid icon labelPosition='right' onClick={() => this.sendStartStatus()}>
-                                    다음 대화 시작
-                                    <Icon name='right arrow' />
-                                </Button>
-                        }
+		    <div style={{ marginBottom: '15px', fontSize: '21px' }}> </div>
+
+		    <Button fluid icon labelPosition='left' onClick={() => this.getPreviousConversation()}>
+		    이전 대화 보기
+		    </Button>
+
+		    <div style={{height: '20px'}}></div>
+
+		    <Button fluid icon labelPosition='left' onClick={() => this.getNextConversation()}>
+		    다음 대화 보기
+		    </Button>
+
+		    <div style={{height: '20px'}}></div>
+
+		    <div style={{display: 'none'}}> 
+		    { endButtonStatus
+			?   <Button fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
+			    <Icon name='pause' />
+			    이번 대화 종료
+			    </Button>
+			    :   <Button disabled fluid icon labelPosition='left' onClick={() => this.sendEndStatus()}>
+			    <Icon name='pause' />
+			    이번 대화 종료
+			    </Button>
+		    }
+
+		    <div style={{height: '20px'}}></div>
+
+		    { nextButtonStatus
+			?   <Button fluid icon labelPosition='right' onClick={() => { (num_experiment === 6) ? this.endExperiment() : this.sendStartStatus()}}>
+			{ (num_experiment === 6) 
+			    ? '실험이 종료되었습니다!'
+				: '다음 대화 시작'
+			}
+			<Icon name='right arrow' />
+			    </Button>
+			    :   <Button disabled fluid icon labelPosition='right' onClick={() => this.sendStartStatus()}>
+			    다음 대화 시작
+			    <Icon name='right arrow' />
+			    </Button>
+		    }
+		    </div>
                     </div>
                 </div>
             </div>

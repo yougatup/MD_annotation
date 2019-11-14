@@ -27,6 +27,9 @@ class App extends Component{
       // Control each button's disabled status
       endButtonStatus: false,
       nextButtonStatus: false,
+
+      prevConversationStatus: false,
+      nextConversationStatus: false
     };
     this.deviceListConvey = this.deviceListConvey.bind(this);
     this.initializeDevicePath = this.initializeDevicePath.bind(this);
@@ -36,6 +39,8 @@ class App extends Component{
     this.controlNextButtonStatus = this.controlNextButtonStatus.bind(this);
     this.controlEndStatus = this.controlEndStatus.bind(this);
     this.controlStartStatus = this.controlStartStatus.bind(this);
+    this.controlPrevConversationStatus = this.controlPrevConversationStatus.bind(this);
+    this.controlNextConversationStatus = this.controlNextConversationStatus.bind(this);
   }
 
   componentDidMount() {
@@ -77,6 +82,18 @@ class App extends Component{
       targetDevice: target,
       click_state: state,
     })
+  }
+
+  controlPrevConversationStatus = () => {
+    this.setState(prevState => ({
+      prevConversationStatus: !prevState.prevConversationStatus,
+    }));
+  }
+
+  controlNextConversationStatus = () => {
+    this.setState(prevState => ({
+      nextConversationStatus: !prevState.nextConversationStatus,
+    }));
   }
 
   // Control the 'endButtonStatus'
@@ -122,9 +139,11 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus } = this.state;
     const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
-      controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice } = this;
+      controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice,
+      controlPrevConversationStatus, controlNextConversationStatus
+    } = this;
     
     return (
       <div class="backGround">
@@ -138,10 +157,14 @@ class App extends Component{
             end={end}
             start={start}
             u_id={u_id}
+	    prevConversationStatus={prevConversationStatus}
+	    nextConversationStatus={nextConversationStatus}
             deviceListConvey={deviceListConvey}
             blockEndButtonStatus={blockEndButtonStatus}
             unblockEndButtonStatus={unblockEndButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
+            controlPrevConversationStatus={controlPrevConversationStatus}
+            controlNextConversationStatus={controlNextConversationStatus}
             controlEndStatus={controlEndStatus}
             controlStartStatus={controlStartStatus}
             controlNextButtonStatus={controlNextButtonStatus}
@@ -158,6 +181,8 @@ class App extends Component{
             endButtonStatus={endButtonStatus}
             nextButtonStatus={nextButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
+            controlPrevConversationStatus={controlPrevConversationStatus}
+            controlNextConversationStatus={controlNextConversationStatus}
             controlNextButtonStatus={controlNextButtonStatus}
             controlEndStatus={controlEndStatus} 
             controlStartStatus={controlStartStatus}
