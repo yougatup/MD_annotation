@@ -3,11 +3,11 @@
 }
 
 .rightInsBox {
-    margin-left: 20%;
+    margin-left: 10%;
     /* background-color: #434866; */
-    padding-top: 40%;
     height: 50%;
     width: 80%;
+    text-align: top;
 }
 
 .rightInfoBox {
@@ -21,11 +21,8 @@
 
 .textLeftAlign {
     position: relative;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 40px;
     color: white;
-    font-weight: bold;
-    font-size: 25px;
 }
 
 .textCenter {

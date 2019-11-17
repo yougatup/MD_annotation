@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, Icon, Label } from 'semantic-ui-react';
 import './RightSideBar.css';
+import { AnnotationList } from "./AnnotationList.js";
 
 const databaseURL = "https://bixby-rawdata.firebaseio.com/";
 
@@ -8,12 +9,66 @@ export class RightSideBar extends Component {
     click_state = 0;
 
     constructor(props) {
-        super(props);
-        this.state = {
-            num_experiment: 1,
-            deviceList: [],
-        };
-        this._getDeviceList = this._getDeviceList.bind(this);
+	super(props);
+	this.state = {
+	    num_experiment: 1,
+	    deviceList: [],
+	    annotationList: [
+		[
+		{
+		    i: 0,
+		    j: 0,
+		    device: "haha",
+		    action: "I don't know",
+		},
+		{
+		    i: 0,
+		    j: 1,
+		    device: "haha",
+		    action: "I don't know"
+		}],
+		[
+		{
+		    i: 0,
+		    j: 0,
+		    device: "haha",
+		    action: "I don't know",
+		},
+		{
+		    i: 0,
+		    j: 1,
+		    device: "haha",
+		    action: "I don't know"
+		}],
+		[
+		{
+		    i: 0,
+		    j: 0,
+		    device: "haha",
+		    action: "I don't know",
+		},
+		{
+		    i: 0,
+		    j: 1,
+		    device: "haha",
+		    action: "I don't know"
+		}],
+		[{
+		    i: 1,
+		    j: 0,
+		    device: "haha",
+		    action: "I don't know"
+		},
+		{
+		    i: 1,
+		    j: 1,
+		    device: "haha",
+		    action: "I don't know haha "
+		}]
+	    ]
+	};
+
+    this._getDeviceList = this._getDeviceList.bind(this);
         this.sendTargetDevice = this.sendTargetDevice.bind(this);
         this.sendEndStatus = this.sendEndStatus.bind(this);
         this.sendStartStatus = this.sendStartStatus.bind(this);
@@ -106,17 +161,20 @@ export class RightSideBar extends Component {
     }
 
     render() {
-        const { num_experiment, deviceList } = this.state;
+        const { num_experiment, deviceList, annotationList } = this.state;
         const { sendTargetDevice } = this;
-
-
         // Control each button's disabled status
-        const { endButtonStatus, nextButtonStatus, botTurnStatus } = this.props;
+        const { endButtonStatus, nextButtonStatus, botTurnStatus} = this.props;
+
 
         return (
             <div class="rightGrid">
                 <div class="rightInsBox">
                     <div class="textLeftAlign">
+		    	<h2 style={{marginTop: '10px'}} > Annotations </h2>
+
+			<AnnotationList device={"haha"} actionList={annotationList} />
+
                         { deviceList.length === 0
                             ?   null
                             :   <Label color={'violet'} size={'large'}>사용 가능한 장치 목록</Label>

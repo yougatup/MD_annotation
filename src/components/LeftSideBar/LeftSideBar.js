@@ -13,7 +13,7 @@ export class LeftSideBar extends Component {
     render() {
         return (
             <div class="leftGrid">
-                <div class="protobotLogo">Raw Data Collecting</div>
+                <div class="protobotLogo">Conversation Data Annotation</div>
                 <div class="sessionBox">Multi Device Interaction</div>
                 <div class="uIdBox">
                     <Label color={'violet'}>User Id</Label>

@@ -22,7 +22,7 @@
 .rightSideBar {
   height: 100vh;
   min-width: 350px;
-  flex: 1 0 28%;
+  flex: 1 0 40%;
   position: relative;
   background-color: #252839;
 }
