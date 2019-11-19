@@ -13,6 +13,8 @@ class App extends Component{
     fire();
     this.state = {
       u_id: '',
+      curConversationIndex: -1,
+      totalNumConversations: -1,
 
       // Check the conversation status
       end: false,
@@ -47,10 +49,29 @@ class App extends Component{
     this.controlNextConversationStatus = this.controlNextConversationStatus.bind(this);
     this.setCurrentConversation = this.setCurrentConversation.bind(this);
     this.controlCurrentConversationStatus = this.controlCurrentConversationStatus.bind(this);
+
+    this.setCurrentConversationIndex = this.setCurrentConversationIndex.bind(this);
+    this.setTotalConversationNumbers = this.setTotalConversationNumbers.bind(this);
   }
 
   componentDidMount() {
     this.idGeneration();
+  }
+
+  setCurrentConversationIndex = (num) => {
+      this.setState( {
+	  curConversationIndex: num
+      });
+
+      console.log(num);
+  }
+
+  setTotalConversationNumbers = (num) => {
+      console.log(num);
+
+      this.setState( {
+	  totalNumConversations: num
+      });
   }
 
   idGeneration = () => {
@@ -158,10 +179,10 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus, currentConversation, currentConversationStatus } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus, currentConversation, currentConversationStatus, curConversationIndex, totalNumConversations } = this.state;
     const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
       controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice,
-      controlPrevConversationStatus, controlNextConversationStatus, setCurrentConversation, controlCurrentConversationStatus
+      controlPrevConversationStatus, controlNextConversationStatus, setCurrentConversation, controlCurrentConversationStatus, setCurrentConversationIndex, setTotalConversationNumbers
     } = this;
     
     return (
@@ -193,6 +214,8 @@ class App extends Component{
             changeBotTurnStatus={changeBotTurnStatus}
             targetDevice={targetDevice}
             click_state={click_state}
+	    setCurrentConversationIndex={setCurrentConversationIndex}
+	    setTotalConversationNumbers={setTotalConversationNumbers}
           />
         </main>
         <div class="rightSideBar">
@@ -214,6 +237,8 @@ class App extends Component{
             controlStartStatus={controlStartStatus}
             botTurnStatus={botTurnStatus}
             setTargetDevice={setTargetDevice}
+	    totalNumConversations={totalNumConversations}
+	    curConversationIndex={curConversationIndex}
           />
         </div>
       </div>

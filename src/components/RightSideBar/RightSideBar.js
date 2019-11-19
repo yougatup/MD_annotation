@@ -12,8 +12,11 @@ export class RightSideBar extends Component {
 	super(props);
 	this.state = {
 	    num_experiment: 1,
+	    curConversationIndex: -1,
+	    numConversations:-1,
 	    deviceList: [],
 	    annotationListUpdated: false,
+	    annotationDatabase: {},
 	    annotationList: [
 	    {
 		query: "This is the query",
@@ -95,7 +98,17 @@ export class RightSideBar extends Component {
     }
 
     componentDidUpdate(prevProps) {
-	const { currentConversation, currentConversationStatus, controlCurrentConversationStatus } = this.props;
+	const { currentConversation, currentConversationStatus, controlCurrentConversationStatus, curConversationIndex, totalNumConversations } = this.props;
+
+	console.log(curConversationIndex);
+	console.log(totalNumConversations);
+
+	if(curConversationIndex != this.state.curConversationIndex || totalNumConversations != this.state.numConversations) {
+	    this.setState( {
+		curConversationIndex: curConversationIndex,
+		numConversations: totalNumConversations
+	    });
+	}
 
 	if(currentConversationStatus) { // updated
 	    console.log(this.state.annotationList);
@@ -223,7 +236,7 @@ export class RightSideBar extends Component {
     }
 
     render() {
-        const { num_experiment, deviceList, annotationList, annotationListUpdated} = this.state;
+        const { num_experiment, deviceList, annotationList, annotationListUpdated, numConversations, curConversationIndex} = this.state;
         const { sendTargetDevice, controlAnnotationListUpdated  } = this;
         // Control each button's disabled status
         const { endButtonStatus, nextButtonStatus, botTurnStatus} = this.props;
@@ -261,6 +274,8 @@ export class RightSideBar extends Component {
                 <div class="rightInfoBox">
                     <div class="textCenter">
 		    <div style={{ marginBottom: '15px', fontSize: '21px' }}> </div>
+
+		    <div style={{marginBottom: '15px'}} > {curConversationIndex+1} / {numConversations} </div>
 
 		    <Button fluid icon labelPosition='left' onClick={() => this.getPreviousConversation()}>
 		    이전 대화 보기

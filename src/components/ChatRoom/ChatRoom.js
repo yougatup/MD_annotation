@@ -18,12 +18,14 @@ export class ChatRoom extends Component {
     extension = '.json';
 
     conversationKeys = [];
-    curConversationIndex = -1;
 
     constructor(props) {
         super(props);
         this.state = {
             // Tree Data
+	    
+	    numConversations: 0,
+	    curConversation: 0,
             topics: {},
             topicList: [],
             
@@ -74,7 +76,7 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus, prevConversationStatus, controlPrevConversationStatus, nextConversationStatus, controlNextConversationStatus, setCurrentConversation } = this.props;
+        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus, prevConversationStatus, controlPrevConversationStatus, nextConversationStatus, controlNextConversationStatus, setCurrentConversation, setCurrentConversationIndex, setTotalConversationNumbers } = this.props;
 	const { topics } = this.state;
 
         if ( end === true ) {
@@ -88,29 +90,40 @@ export class ChatRoom extends Component {
         }
 
 	if(prevConversationStatus) {
-	    this.curConversation--;
+	    console.log("HI?");
+	    console.log(this.state);
 
-	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+	    var idx = this.state.curConversation - 1;
 
-	    this.setState({
-		messageList: msgList
-	    })
+	    console.log(idx);
+
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[idx]);
+
+	    this.setState(prevState => ({
+		messageList: msgList,
+		curConversastion: idx
+	    }));
 
 	    controlPrevConversationStatus();
 	    setCurrentConversation(msgList);
+
+	    setCurrentConversationIndex(idx);
 	}
 
 	if(nextConversationStatus) {
-	    this.curConversation++;
+	    var idx = this.state.curConversation + 1;
 
-	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[idx]);
 
 	    this.setState({
-		messageList: msgList
+		messageList: msgList,
+		curConversation: idx
 	    })
 
 	    controlNextConversationStatus();
 	    setCurrentConversation(msgList);
+
+	    setCurrentConversationIndex(idx);
 	}
 
         if (prevState.selectBotStatus !== this.state.selectBotStatus){
@@ -129,6 +142,8 @@ export class ChatRoom extends Component {
     // function for tree data import
     // ----------------------
     getConversation = (root, key) => {
+	console.log(root, key);
+
 	var msgList = [];
 
 	msgList.push ( 
@@ -139,6 +154,8 @@ export class ChatRoom extends Component {
 
 	var speakerFlag = false;
 	var id_cnt = 1;
+
+	console.log(conversation);
 
 	while(true) {
 	    if(conversation.children == null) break;
@@ -166,6 +183,7 @@ export class ChatRoom extends Component {
     }
 
     _getTopics() {
+	const { setCurrentConversationIndex, setTotalConversationNumbers } = this.props;
 	const { messageList, time, } = this.state;
 
         fetch(`${databaseURL}/topics.json`).then(res => {
@@ -179,15 +197,23 @@ export class ChatRoom extends Component {
 	    var root = topics[0];
 
 	    this.conversationKeys = Object.keys(root.children);
-	    this.curConversation = 0;
+	    // this.curConversation = 0;
+	    // this.numConversation = topics[0].children.length;
 
-	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[this.curConversation]);
+	    var msgList = this.getConversation(topics[0], Object.keys(topics[0].children)[0]);
 
 	    this.setState({
 		topics: topics,
 		startSession: false,
-		messageList: msgList
+		messageList: msgList,
+		curConversation: 0
 	    })
+
+	    setCurrentConversationIndex(0);
+	    console.log(topics[0].children);
+	    console.log(Object.keys(topics[0].children).length);
+
+	    setTotalConversationNumbers(Object.keys(topics[0].children).length);
 	});
     }
 /*
@@ -409,6 +435,8 @@ export class ChatRoom extends Component {
             selectTopic,
             selectAnswer,
 	    _getTopics,
+	    setCurrentConversationIndex,
+	    setTotalConversationNumbers
         } = this;
 
         const sysNotice = [
