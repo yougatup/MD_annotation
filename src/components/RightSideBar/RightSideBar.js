@@ -13,62 +13,76 @@ export class RightSideBar extends Component {
 	this.state = {
 	    num_experiment: 1,
 	    deviceList: [],
+	    annotationListUpdated: false,
 	    annotationList: [
-		[
+	    {
+		query: "This is the query",
+		queryIndex: 0,
+		actionList: [
 		{
-		    i: 0,
-		    j: 0,
+		    actionIndex: 0,
 		    device: "haha",
 		    action: "I don't know",
 		},
 		{
-		    i: 0,
-		    j: 1,
+		    actionIndex: 1,
 		    device: "haha",
 		    action: "I don't know"
-		}],
-		[
+		}
+		]
+	    },
+	    {
+		query: "This is the query 2",
+		queryIndex: 1,
+		actionList: [
 		{
-		    i: 0,
-		    j: 0,
+		    actionIndex: 0,
 		    device: "haha",
 		    action: "I don't know",
 		},
 		{
-		    i: 0,
-		    j: 1,
+		    actionIndex: 1,
 		    device: "haha",
 		    action: "I don't know"
-		}],
-		[
+		}
+		]
+	    },
+	    {
+		query: "This is the query 3",
+		queryIndex: 2,
+		actionList: [
 		{
-		    i: 0,
-		    j: 0,
+		    actionIndex: 0,
 		    device: "haha",
 		    action: "I don't know",
 		},
 		{
-		    i: 0,
-		    j: 1,
+		    actionIndex: 1,
 		    device: "haha",
 		    action: "I don't know"
-		}],
-		[{
-		    i: 1,
-		    j: 0,
+		}
+		]
+	    },
+	    {
+		query: "This is the query 4",
+		queryIndex: 3,
+		actionList: [
+		{
+		    actionIndex: 0,
 		    device: "haha",
 		    action: "I don't know"
 		},
 		{
-		    i: 1,
-		    j: 1,
+		    actionIndex: 1,
 		    device: "haha",
 		    action: "I don't know haha "
-		}]
+		}
+		]
+	    }
 	    ]
 	};
 
-    this._getDeviceList = this._getDeviceList.bind(this);
+    	this._getDeviceList = this._getDeviceList.bind(this);
         this.sendTargetDevice = this.sendTargetDevice.bind(this);
         this.sendEndStatus = this.sendEndStatus.bind(this);
         this.sendStartStatus = this.sendStartStatus.bind(this);
@@ -76,9 +90,51 @@ export class RightSideBar extends Component {
 
         this.getPreviousConversation = this.getPreviousConversation.bind(this);
         this.getNextConversation= this.getNextConversation.bind(this);
+
+	this.controlAnnotationListUpdated = this.controlAnnotationListUpdated.bind(this);
     }
 
     componentDidUpdate(prevProps) {
+	const { currentConversation, currentConversationStatus, controlCurrentConversationStatus } = this.props;
+
+	if(currentConversationStatus) { // updated
+	    console.log(this.state.annotationList);
+
+	    controlCurrentConversationStatus();
+
+	    var curAnnotationList = [];
+
+	    for(var i=0;i<currentConversation.length;i++) {
+		if(currentConversation[i].type == 'bot' && currentConversation[i].actionList.length > 0) {
+		    curAnnotationList.push({
+			query: '',
+			queryIndex: curAnnotationList.length,
+			actionList: currentConversation[i].actionList.map((t, i) => {
+			    return {
+			    actionIndex: i,
+			    device: t.device,
+			    action: t.action
+			    }
+			})
+		    });
+		}
+	    }
+
+	    console.log(curAnnotationList);
+
+	    this.setState({
+		annotationList: curAnnotationList,
+		annotationListUpdated: true
+	    });
+	}
+	else {
+	    if(this.annotationListUpdated) {
+		this.setState({
+		    annotationListUpdated: false
+		});
+	    }
+	}
+/*
         if (prevProps.end !== this.props.end){
             if(this.props.end){
                 this.setState({
@@ -91,8 +147,14 @@ export class RightSideBar extends Component {
         if (prevProps.devicePath !== this.props.devicePath){
             this._getDeviceList();
         }
+	*/
     }
 
+    controlAnnotationListUpdated() {
+	this.setState( {
+	    annotationListUpdated: false
+	});
+    }
     _getDeviceList() {
         fetch(`${databaseURL+this.props.devicePath}`).then(res => {
             if(res.status !== 200) {
@@ -161,8 +223,8 @@ export class RightSideBar extends Component {
     }
 
     render() {
-        const { num_experiment, deviceList, annotationList } = this.state;
-        const { sendTargetDevice } = this;
+        const { num_experiment, deviceList, annotationList, annotationListUpdated} = this.state;
+        const { sendTargetDevice, controlAnnotationListUpdated  } = this;
         // Control each button's disabled status
         const { endButtonStatus, nextButtonStatus, botTurnStatus} = this.props;
 
@@ -173,7 +235,7 @@ export class RightSideBar extends Component {
                     <div class="textLeftAlign">
 		    	<h2 style={{marginTop: '10px'}} > Annotations </h2>
 
-			<AnnotationList device={"haha"} actionList={annotationList} />
+			<AnnotationList device={"haha"} actionList={annotationList} annotationListUpdated={annotationListUpdated} controlAnnotationListUpdated={controlAnnotationListUpdated} />
 
                         { deviceList.length === 0
                             ?   null

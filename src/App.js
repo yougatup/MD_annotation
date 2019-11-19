@@ -29,8 +29,12 @@ class App extends Component{
       nextButtonStatus: false,
 
       prevConversationStatus: false,
-      nextConversationStatus: false
+      nextConversationStatus: false,
+
+      currentConversationStatus: false,
+      currentConversation: []
     };
+
     this.deviceListConvey = this.deviceListConvey.bind(this);
     this.initializeDevicePath = this.initializeDevicePath.bind(this);
     this.changeBotTurnStatus = this.changeBotTurnStatus.bind(this);
@@ -41,6 +45,8 @@ class App extends Component{
     this.controlStartStatus = this.controlStartStatus.bind(this);
     this.controlPrevConversationStatus = this.controlPrevConversationStatus.bind(this);
     this.controlNextConversationStatus = this.controlNextConversationStatus.bind(this);
+    this.setCurrentConversation = this.setCurrentConversation.bind(this);
+    this.controlCurrentConversationStatus = this.controlCurrentConversationStatus.bind(this);
   }
 
   componentDidMount() {
@@ -96,6 +102,19 @@ class App extends Component{
     }));
   }
 
+  controlCurrentConversationStatus = () => {
+    this.setState(prevState => ({
+      currentConversationStatus : false
+    }));
+  }
+
+  setCurrentConversation = (conv) => {
+    this.setState(prevState => ({
+	currentConversationStatus: true,
+	currentConversation: conv
+    }));
+  }
+
   // Control the 'endButtonStatus'
   controlEndButtonStatus = () => {
     this.setState(prevState => ({
@@ -139,10 +158,10 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus, currentConversation, currentConversationStatus } = this.state;
     const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
       controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice,
-      controlPrevConversationStatus, controlNextConversationStatus
+      controlPrevConversationStatus, controlNextConversationStatus, setCurrentConversation, controlCurrentConversationStatus
     } = this;
     
     return (
@@ -159,12 +178,15 @@ class App extends Component{
             u_id={u_id}
 	    prevConversationStatus={prevConversationStatus}
 	    nextConversationStatus={nextConversationStatus}
+	    currentConversation={currentConversation}
+	    currentConversationStatus={currentConversationStatus}
             deviceListConvey={deviceListConvey}
             blockEndButtonStatus={blockEndButtonStatus}
             unblockEndButtonStatus={unblockEndButtonStatus}
             controlEndButtonStatus={controlEndButtonStatus}
             controlPrevConversationStatus={controlPrevConversationStatus}
             controlNextConversationStatus={controlNextConversationStatus}
+            setCurrentConversation={setCurrentConversation}
             controlEndStatus={controlEndStatus}
             controlStartStatus={controlStartStatus}
             controlNextButtonStatus={controlNextButtonStatus}
@@ -180,9 +202,13 @@ class App extends Component{
             devicePath={devicePath}
             endButtonStatus={endButtonStatus}
             nextButtonStatus={nextButtonStatus}
+	    currentConversation={currentConversation}
+	    currentConversationStatus={currentConversationStatus}
             controlEndButtonStatus={controlEndButtonStatus}
             controlPrevConversationStatus={controlPrevConversationStatus}
             controlNextConversationStatus={controlNextConversationStatus}
+            setCurrentConversation={setCurrentConversation}
+            controlCurrentConversationStatus={controlCurrentConversationStatus}
             controlNextButtonStatus={controlNextButtonStatus}
             controlEndStatus={controlEndStatus} 
             controlStartStatus={controlStartStatus}

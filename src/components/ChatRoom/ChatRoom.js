@@ -74,7 +74,7 @@ export class ChatRoom extends Component {
     }
     
     componentDidUpdate(prevProps, prevState) {
-        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus, prevConversationStatus, controlPrevConversationStatus, nextConversationStatus, controlNextConversationStatus } = this.props;
+        const { end, start, controlEndStatus, controlStartStatus, changeBotTurnStatus, prevConversationStatus, controlPrevConversationStatus, nextConversationStatus, controlNextConversationStatus, setCurrentConversation } = this.props;
 	const { topics } = this.state;
 
         if ( end === true ) {
@@ -97,6 +97,7 @@ export class ChatRoom extends Component {
 	    })
 
 	    controlPrevConversationStatus();
+	    setCurrentConversation(msgList);
 	}
 
 	if(nextConversationStatus) {
@@ -109,6 +110,7 @@ export class ChatRoom extends Component {
 	    })
 
 	    controlNextConversationStatus();
+	    setCurrentConversation(msgList);
 	}
 
         if (prevState.selectBotStatus !== this.state.selectBotStatus){
