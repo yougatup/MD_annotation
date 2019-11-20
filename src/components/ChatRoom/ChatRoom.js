@@ -101,7 +101,7 @@ export class ChatRoom extends Component {
 
 	    this.setState(prevState => ({
 		messageList: msgList,
-		curConversastion: idx
+		curConversation: idx
 	    }));
 
 	    controlPrevConversationStatus();
@@ -183,7 +183,7 @@ export class ChatRoom extends Component {
     }
 
     _getTopics() {
-	const { setCurrentConversationIndex, setTotalConversationNumbers } = this.props;
+	const { setCurrentConversationIndex, setTotalConversationNumbers, setCurrentConversation } = this.props;
 	const { messageList, time, } = this.state;
 
         fetch(`${databaseURL}/topics.json`).then(res => {
@@ -209,7 +209,9 @@ export class ChatRoom extends Component {
 		curConversation: 0
 	    })
 
+	    setCurrentConversation(msgList);
 	    setCurrentConversationIndex(0);
+
 	    console.log(topics[0].children);
 	    console.log(Object.keys(topics[0].children).length);
 
@@ -465,6 +467,7 @@ export class ChatRoom extends Component {
                             </div>
                             <div style={{float:'left', clear:'both', height:'150px'}} ref={(el) => { this.messagesEnd = el; }}></div>
                         </main>
+
                         <div class="textInputBox">
                             <div class="textInputBoxInput">
                                 {inputButtonState

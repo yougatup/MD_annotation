@@ -27,10 +27,28 @@
 }
 
 
+.deviceBox {
+    margin-top: 10px;
+    margin-left: 30px;
+    /* font-weight: bold; */
+    color: #EEEEEE;
+    font-size: 15px;
+}
+
+.actionBox{
+    margin-top: 10px;
+    margin-left: 30px;
+    /* font-weight: bold; */
+    color: #EEEEEE;
+    font-size: 15px;
+    overflow: auto;
+    height: 300px;
+    width: 100%;
+}
+
 .leftInsBox {
     vertical-align: middle;
-    margin-left: 20%;
-    margin-top: 150px;
+    margin-top: 15px;
     /* background-color: #434866; */
     height: 40%;
     width: 80%;

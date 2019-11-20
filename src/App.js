@@ -16,6 +16,9 @@ class App extends Component{
       curConversationIndex: -1,
       totalNumConversations: -1,
 
+      annotationTarget: "",
+      annotationActionList: [],
+
       // Check the conversation status
       end: false,
       start: false,
@@ -49,6 +52,7 @@ class App extends Component{
     this.controlNextConversationStatus = this.controlNextConversationStatus.bind(this);
     this.setCurrentConversation = this.setCurrentConversation.bind(this);
     this.controlCurrentConversationStatus = this.controlCurrentConversationStatus.bind(this);
+    this.setCurrentAnnotationTargetDevice = this.setCurrentAnnotationTargetDevice.bind(this);
 
     this.setCurrentConversationIndex = this.setCurrentConversationIndex.bind(this);
     this.setTotalConversationNumbers = this.setTotalConversationNumbers.bind(this);
@@ -56,6 +60,18 @@ class App extends Component{
 
   componentDidMount() {
     this.idGeneration();
+  }
+
+  setCurrentAnnotationTargetDevice = (t, actionList) => {
+      console.log("Hi");
+      console.log(t);
+      console.log(actionList);
+
+
+      this.setState( {
+	  annotationTarget: t,
+	  annotationActionList: actionList
+      }); 
   }
 
   setCurrentConversationIndex = (num) => {
@@ -179,10 +195,10 @@ class App extends Component{
   }
 
   render(){
-    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus, currentConversation, currentConversationStatus, curConversationIndex, totalNumConversations } = this.state;
+    const { end, start, endButtonStatus, nextButtonStatus, devicePath, botTurnStatus, targetDevice, u_id, click_state, prevConversationStatus, nextConversationStatus, currentConversation, currentConversationStatus, curConversationIndex, totalNumConversations, annotationTarget, annotationActionList } = this.state;
     const { controlEndButtonStatus, initializeDevicePath, blockEndButtonStatus, unblockEndButtonStatus,
       controlNextButtonStatus, controlEndStatus, controlStartStatus, deviceListConvey, changeBotTurnStatus, setTargetDevice,
-      controlPrevConversationStatus, controlNextConversationStatus, setCurrentConversation, controlCurrentConversationStatus, setCurrentConversationIndex, setTotalConversationNumbers
+      controlPrevConversationStatus, controlNextConversationStatus, setCurrentConversation, controlCurrentConversationStatus, setCurrentConversationIndex, setTotalConversationNumbers, setCurrentAnnotationTargetDevice
     } = this;
     
     return (
@@ -190,6 +206,8 @@ class App extends Component{
         <div class="leftSideBar">
           <LeftSideBar 
             u_id={u_id}
+	    annotationTarget={annotationTarget}
+	    annotationActionList={annotationActionList}
           />
         </div>
         <main class="chatGrid chatStyle">
@@ -239,6 +257,7 @@ class App extends Component{
             setTargetDevice={setTargetDevice}
 	    totalNumConversations={totalNumConversations}
 	    curConversationIndex={curConversationIndex}
+	    setCurrentAnnotationTargetDevice={setCurrentAnnotationTargetDevice}
           />
         </div>
       </div>

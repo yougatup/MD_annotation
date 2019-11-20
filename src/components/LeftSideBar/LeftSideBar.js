@@ -11,6 +11,8 @@ export class LeftSideBar extends Component {
     }
 
     render() {
+	const { annotationTarget, annotationActionList } = this.props;
+
         return (
             <div class="leftGrid">
                 <div class="protobotLogo">Conversation Data Annotation</div>
@@ -21,6 +23,20 @@ export class LeftSideBar extends Component {
                 </div>
                     <div class="leftInsBox">
                         <div class="leftInsBoxText">
+			<div class='sessionBox'> Action List </div>
+			<div class='deviceBox'>
+				device:  {annotationTarget}
+			</div>
+			<div class='actionBox'>
+				actions:
+				{
+				    annotationActionList.map( t => (
+						<div> * {t} </div>
+					)
+				    )
+				}
+			</div>
+
                         </div>
                     </div>
             </div>

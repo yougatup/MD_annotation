@@ -11,78 +11,17 @@ export class RightSideBar extends Component {
     constructor(props) {
 	super(props);
 	this.state = {
+	    curContribution: false,
 	    num_experiment: 1,
 	    curConversationIndex: -1,
 	    numConversations:-1,
 	    deviceList: [],
 	    annotationListUpdated: false,
-	    annotationDatabase: {},
-	    annotationList: [
-	    {
-		query: "This is the query",
-		queryIndex: 0,
-		actionList: [
-		{
-		    actionIndex: 0,
-		    device: "haha",
-		    action: "I don't know",
-		},
-		{
-		    actionIndex: 1,
-		    device: "haha",
-		    action: "I don't know"
-		}
-		]
+	    annotationRawDatabase: {},
+	    annotationProcessedDatabase: {
+		"queryquery": [] 
 	    },
-	    {
-		query: "This is the query 2",
-		queryIndex: 1,
-		actionList: [
-		{
-		    actionIndex: 0,
-		    device: "haha",
-		    action: "I don't know",
-		},
-		{
-		    actionIndex: 1,
-		    device: "haha",
-		    action: "I don't know"
-		}
-		]
-	    },
-	    {
-		query: "This is the query 3",
-		queryIndex: 2,
-		actionList: [
-		{
-		    actionIndex: 0,
-		    device: "haha",
-		    action: "I don't know",
-		},
-		{
-		    actionIndex: 1,
-		    device: "haha",
-		    action: "I don't know"
-		}
-		]
-	    },
-	    {
-		query: "This is the query 4",
-		queryIndex: 3,
-		actionList: [
-		{
-		    actionIndex: 0,
-		    device: "haha",
-		    action: "I don't know"
-		},
-		{
-		    actionIndex: 1,
-		    device: "haha",
-		    action: "I don't know haha "
-		}
-		]
-	    }
-	    ]
+	    annotationList: []
 	};
 
     	this._getDeviceList = this._getDeviceList.bind(this);
@@ -95,13 +34,20 @@ export class RightSideBar extends Component {
         this.getNextConversation= this.getNextConversation.bind(this);
 
 	this.controlAnnotationListUpdated = this.controlAnnotationListUpdated.bind(this);
+	this.handleButtonClick = this.handleButtonClick.bind(this);
+	this.handleRegisterButtonClick= this.handleRegisterButtonClick.bind(this);
+
+	this._setCurrentAnnotationTargetDevice = this._setCurrentAnnotationTargetDevice.bind(this);
     }
 
     componentDidUpdate(prevProps) {
 	const { currentConversation, currentConversationStatus, controlCurrentConversationStatus, curConversationIndex, totalNumConversations } = this.props;
+	const { annotationRawDatabase } = this.state;
 
 	console.log(curConversationIndex);
 	console.log(totalNumConversations);
+
+	if(curConversationIndex == -1 || totalNumConversations == -1) return;
 
 	if(curConversationIndex != this.state.curConversationIndex || totalNumConversations != this.state.numConversations) {
 	    this.setState( {
@@ -110,35 +56,53 @@ export class RightSideBar extends Component {
 	    });
 	}
 
-	if(currentConversationStatus) { // updated
-	    console.log(this.state.annotationList);
+	console.log(annotationRawDatabase);
 
+	if(currentConversationStatus) { // updated
 	    controlCurrentConversationStatus();
 
-	    var curAnnotationList = [];
+	    if(!(curConversationIndex in annotationRawDatabase)) {
+		console.log(this.state.annotationList);
 
-	    for(var i=0;i<currentConversation.length;i++) {
-		if(currentConversation[i].type == 'bot' && currentConversation[i].actionList.length > 0) {
-		    curAnnotationList.push({
-			query: '',
-			queryIndex: curAnnotationList.length,
-			actionList: currentConversation[i].actionList.map((t, i) => {
-			    return {
-			    actionIndex: i,
-			    device: t.device,
-			    action: t.action
-			    }
-			})
-		    });
+		var curAnnotationList = [];
+
+		for(var i=0;i<currentConversation.length;i++) {
+		    if(currentConversation[i].type == 'bot' && currentConversation[i].actionList.length > 0) {
+			curAnnotationList.push({
+			    query: '',
+			    queryIndex: curAnnotationList.length,
+			    actionList: currentConversation[i].actionList.map((t, i) => {
+				return {
+				    actionIndex: i,
+				    device: t.device,
+				    action: t.action
+				}
+			    })
+			});
+		    }
 		}
+
+		console.log(curAnnotationList);
+
+		annotationRawDatabase[curConversationIndex] = {
+		    processed: false,
+		    annotation: Array.from(curAnnotationList)
+		};
+
+		this.setState({
+		    annotationList: annotationRawDatabase[curConversationIndex].annotation, 
+		    annotationRawDatabase: annotationRawDatabase,
+		    annotationListUpdated: true,
+		    curContribution: false
+		});
 	    }
-
-	    console.log(curAnnotationList);
-
-	    this.setState({
-		annotationList: curAnnotationList,
-		annotationListUpdated: true
-	    });
+	    else {
+		this.setState({
+		    annotationList: annotationRawDatabase[curConversationIndex].annotation, 
+		    annotationListUpdated: true,
+		    curContribution: annotationRawDatabase[curConversationIndex].processed
+		});
+	    }
 	}
 	else {
 	    if(this.annotationListUpdated) {
@@ -161,6 +125,64 @@ export class RightSideBar extends Component {
             this._getDeviceList();
         }
 	*/
+    }
+
+    _setCurrentAnnotationTargetDevice = (t) => {
+	const { setCurrentAnnotationTargetDevice, } = this.props;
+	const { annotationProcessedDatabase  } = this.state;
+
+	console.log(annotationProcessedDatabase);
+
+	if(!(t in annotationProcessedDatabase)) setCurrentAnnotationTargetDevice(t, []);
+	else setCurrentAnnotationTargetDevice(t, annotationProcessedDatabase[t] );
+    }
+
+    handleRegisterButtonClick() {
+	const { annotationRawDatabase, annotationProcessedDatabase, curConversationIndex } = this.state;
+	console.log("yay");
+
+	console.log(annotationRawDatabase);
+	console.log(annotationRawDatabase[curConversationIndex].annotation);
+	console.log(annotationProcessedDatabase);
+
+	var tmpProcessedDatabase = annotationProcessedDatabase;
+
+	for(var i=0;i<annotationRawDatabase[curConversationIndex].annotation.length;i++) {
+	    var queryString = annotationRawDatabase[curConversationIndex].annotation[i].query;
+
+	    if(!(tmpProcessedDatabase["queryquery"].indexOf(queryString) >= 0))
+		tmpProcessedDatabase["queryquery"].push(queryString);
+
+	    for(var j=0;j<annotationRawDatabase[curConversationIndex].annotation[i].actionList.length;j++) {
+		var acList = annotationRawDatabase[curConversationIndex].annotation[i].actionList[j];
+
+		if(!(acList.device in tmpProcessedDatabase))
+		    tmpProcessedDatabase[acList.device] = [];
+
+		console.log(tmpProcessedDatabase[acList.device]);
+		console.log(acList.action);
+		console.log(tmpProcessedDatabase[acList.device].indexOf(acList.action));
+
+		if(!(tmpProcessedDatabase[acList.device].indexOf(acList.action) >= 0))
+		    tmpProcessedDatabase[acList.device].push(acList.action);
+	    }
+	}
+
+	console.log(tmpProcessedDatabase);
+
+	annotationRawDatabase[curConversationIndex].processed = true;
+
+	this.setState( {
+	    curContribution: true,
+	    annotationProcessedDatabase: tmpProcessedDatabase
+	});
+    }
+
+    handleButtonClick() {
+	console.log("HI!");
+
+	console.log(this.state.annotationRawDatabase.annotation);
+	console.log(JSON.stringify(this.state.annotationRawDatabase.annotation, null, 2));
     }
 
     controlAnnotationListUpdated() {
@@ -236,8 +258,8 @@ export class RightSideBar extends Component {
     }
 
     render() {
-        const { num_experiment, deviceList, annotationList, annotationListUpdated, numConversations, curConversationIndex} = this.state;
-        const { sendTargetDevice, controlAnnotationListUpdated  } = this;
+        const { num_experiment, deviceList, annotationList, annotationListUpdated, numConversations, curConversationIndex, curContribution} = this.state;
+        const { sendTargetDevice, controlAnnotationListUpdated, _setCurrentAnnotationTargetDevice  } = this;
         // Control each button's disabled status
         const { endButtonStatus, nextButtonStatus, botTurnStatus} = this.props;
 
@@ -246,9 +268,27 @@ export class RightSideBar extends Component {
             <div class="rightGrid">
                 <div class="rightInsBox">
                     <div class="textLeftAlign">
-		    	<h2 style={{marginTop: '10px'}} > Annotations </h2>
+		    	<div style={{marginTop: '10px', fontSize: '20px', display: 'inline'}} > Annotations </div> 
+			{
+			    curContribution ? 
+				<div class="ui green label" display='inline'> Done </div>
+				:
 
-			<AnnotationList device={"haha"} actionList={annotationList} annotationListUpdated={annotationListUpdated} controlAnnotationListUpdated={controlAnnotationListUpdated} />
+				<div class="ui red label" display='inline'> Processing </div>
+			}
+
+			<div> 
+			<button style={{display: 'none'}} onClick={() => this.handleButtonClick()}> export </button>
+			<button style={{marginTop: '5px'}} onClick={() => this.handleRegisterButtonClick()}> Submit the current annotations </button>
+			</div>
+
+			<AnnotationList 
+				device={"haha"}
+				actionList={annotationList}
+				annotationListUpdated={annotationListUpdated}
+				controlAnnotationListUpdated={controlAnnotationListUpdated} 
+				setCurrentAnnotationTargetDevice={_setCurrentAnnotationTargetDevice}
+				/>
 
                         { deviceList.length === 0
                             ?   null
